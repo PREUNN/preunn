@@ -1,0 +1,4 @@
+/venv/*
+
+/data/source_datasets/HTTP/*
+/data/source_datasets/FTP/*

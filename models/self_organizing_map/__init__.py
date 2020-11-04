@@ -1,0 +1,1 @@
+from models.self_organizing_map.personal_trainer import *
