@@ -238,11 +238,3 @@ class LBNL_FTP_PKTDatasetCombined(AbstractFTPDataset):
         for dataset in datasets:
             self.merge(dataset)
 
-
-if __name__ == "__main__":
-    x = LBNL_FTP_PKTDataset1()
-    x = LBNL_FTP_PKTDataset2()
-    x = LBNL_FTP_PKTDataset3()
-    x = LBNL_FTP_PKTDataset4()
-
-
