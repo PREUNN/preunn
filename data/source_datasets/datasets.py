@@ -45,9 +45,16 @@ class AbstractDataset(Dataset, ABC):
             return self.__getitem__(idx+1)
         return self.data[idx]
 
-    @abstractmethod
     def merge(self, new_dataset: Dataset):
-        pass
+        """
+        Merging a new dataset with this one
+        :param new_dataset: New dataset to be merged into this
+        :return: None
+        """
+        # parameter checks
+        assert self.protocol_type == new_dataset.protocol_type
+
+        self.data.extend(new_dataset.data)
 
     def split(self, split_value: float):
         """
@@ -78,19 +85,16 @@ class AbstractDataset(Dataset, ABC):
 
 class AbstractHTTPDataset(AbstractDataset):
     """Abstract class for all datasets of protocol type HTTP"""
+
     def __init__(self, filepath: str):
         super().__init__(filepath, HTTPParser())
 
-    def merge(self, new_dataset: AbstractDataset):
-        """
-        Merging a new dataset with this one
-        :param new_dataset: New dataset to be merged into this
-        :return: None
-        """
-        # parameter checks
-        assert self.protocol_type == new_dataset.protocol_type
 
-        self.data.extend(new_dataset.data)
+class AbstractFTPDataset(AbstractDataset):
+    """Abstract class for all datasets of protocol type FTP"""
+
+    def __init__(self, filepath: str):
+        super().__init__(filepath, FTPParser())
 
 
 class IEEEHTTPDataset1(AbstractHTTPDataset):
@@ -175,8 +179,9 @@ class ISCX_IDS_2012Dataset11(AbstractHTTPDataset):
 
 class AllHTTPDatasetsCombined(AbstractHTTPDataset):
     """
-    This dataset loads and combines all available datasets at once
+    This dataset loads and combines all available HTTP datasets at once
     """
+
     def __init__(self):
         super().__init__("/HTTP/IEEEHTTPandDNS/HTTP/http_set1_1")
         datasets = []
@@ -198,5 +203,46 @@ class AllHTTPDatasetsCombined(AbstractHTTPDataset):
         for dataset in datasets:
             self.merge(dataset)
 
+
+class LBNL_FTP_PKTDataset1(AbstractFTPDataset):
+    def __init__(self):
+        super().__init__("/FTP/LBNL-FTP-PKT/lbnl-ftp-only_part1")
+
+
+class LBNL_FTP_PKTDataset2(AbstractFTPDataset):
+    def __init__(self):
+        super().__init__("/FTP/LBNL-FTP-PKT/lbnl-ftp-only_part2")
+
+
+class LBNL_FTP_PKTDataset3(AbstractFTPDataset):
+    def __init__(self):
+        super().__init__("/FTP/LBNL-FTP-PKT/lbnl-ftp-only_part3")
+
+
+class LBNL_FTP_PKTDataset4(AbstractFTPDataset):
+    def __init__(self):
+        super().__init__("/FTP/LBNL-FTP-PKT/lbnl-ftp-only_part4")
+
+
+class LBNL_FTP_PKTDatasetCombined(AbstractFTPDataset):
+    """
+    This dataset loads and combines all available FTP datasets at once
+    """
+
+    def __init__(self):
+        super().__init__("/FTP/LBNL-FTP-PKT/lbnl-ftp-only_part1")
+        datasets = []
+        datasets.append(LBNL_FTP_PKTDataset2)
+        datasets.append(LBNL_FTP_PKTDataset3)
+        datasets.append(LBNL_FTP_PKTDataset4)
+        for dataset in datasets:
+            self.merge(dataset)
+
+
+if __name__ == "__main__":
+    x = LBNL_FTP_PKTDataset1()
+    x = LBNL_FTP_PKTDataset2()
+    x = LBNL_FTP_PKTDataset3()
+    x = LBNL_FTP_PKTDataset4()
 
 

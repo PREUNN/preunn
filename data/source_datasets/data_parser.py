@@ -71,3 +71,29 @@ class HTTPParser(AbstractProtocolParser):
 
         # output
         return return_dataset
+
+
+class FTPParser(AbstractProtocolParser):
+    """Parser class for FTP datasets"""
+
+    def __init__(self):
+        super().__init__(Protocol.FTP)
+
+    def parse(self, filepath):
+
+        packets = scapy.all.rdpcap(open(filepath, 'rb'))
+        return_dataset = []
+
+        # iterate through every packet
+        for packet in packets:
+            try:
+                packet_payload = packet.payload.payload
+
+                if packet.dport == 21 or packet.sport == 21:
+                    data = packet_payload.payload.original
+                    return_dataset.append(str(data.decode("utf-8")))
+            except:
+                continue
+
+        # Output
+        return return_dataset
