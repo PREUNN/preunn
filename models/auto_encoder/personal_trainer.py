@@ -48,8 +48,8 @@ class AutoEncoderPersonalTrainer(AbstractPersonalTrainer):
                 train_loss /= self.log_interval
                 self.print_training_loss(epoch=epoch, batch_id=batch_id,
                                          batch_size=len(data), loss=train_loss)
-                print(sequence_tensor_to_string_list(output[0].unsqueeze(0),
-                                                     coded=True)[0])
+                print(image_tensor_to_string_list(data[0].unsqueeze(0)))
+                print(image_tensor_to_string_list(output[0].unsqueeze(0)))
                 self.model.store_model(self.model_save_path)
             if batch_id % self.log_interval == 0:
                 train_loss = 0

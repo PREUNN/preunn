@@ -3,7 +3,7 @@ from data.preprocessors.image_preprocessing.image_preprocessors \
 from data.preprocessors.sequence_preprocessing.processing \
     import one_hot_encode_string
 from data.preprocessors.abstract_preprocessor \
-import AbstractPreprocessor, AbstractDataset
+    import AbstractPreprocessor, AbstractDataset
 from abc import ABC
 import random
 
@@ -124,6 +124,8 @@ class RandomSequencePreprocessor(AbstractSequencePreprocessor):
     Preprocessor creating random concatenated sequences from the entire dataset
     """
 
+    SEQUENCE_LENGTH_FACTOR = 4
+
     def __init__(self, source_dataset: AbstractDataset, alphabet_size: int,
                  data_length: int, feature_extractor=None, som=None,
                  num_clusters=1):
@@ -142,7 +144,7 @@ class RandomSequencePreprocessor(AbstractSequencePreprocessor):
         item = ""
 
         # create short concatenated sequence
-        while len(item) < 4 * self.data_length:
+        while len(item) < self.SEQUENCE_LENGTH_FACTOR * self.data_length:
             try:
                 data = self.source_dataset.__getitem__(start_idx)
                 aux_data = self.num_clusters - 1

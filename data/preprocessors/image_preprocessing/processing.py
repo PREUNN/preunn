@@ -4,7 +4,7 @@ import random
 import torch
 
 
-def padding_string(string: str, data_length: int, padder="0"):
+def padding_string(string: str, data_length: int, padder="\x00"):
     """
     Adding a padder symbol to a string to make it fit a given data length
     :param string: String to be extended

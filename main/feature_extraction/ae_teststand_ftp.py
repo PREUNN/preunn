@@ -1,9 +1,10 @@
-from data.source_datasets.datasets import AllHTTPDatasetsCombined
+# TODO use larger dataset
+from data.source_datasets.datasets import LBNL_FTP_PKTDataset1
 from data.preprocessors.image_preprocessing.image_preprocessors \
     import NormalImagePreprocessor
-from models.auto_encoder.personal_trainer import AutoEncoderPersonalTrainer
-from models.auto_encoder.architecture import AE
 from torch.utils.data import DataLoader
+from models.auto_encoder.architecture import AE
+from models.auto_encoder.personal_trainer import AutoEncoderPersonalTrainer
 from main.helper import load_model
 import torch.nn as nn
 import torch
@@ -11,10 +12,11 @@ import torch
 """
 global variables for training purpose
 """
-LOG_INTERVAL = 25
-MODEL_SAVE_PATH = "AEimage_http.pt"
-NUM_EPOCHS = 10
+LOG_INTERVAL = 100
+MODEL_SAVE_PATH = "AEimage_ftp.pt"
+NUM_EPOCHS = 5
 BATCH_SIZE = 128
+ALPHABET_SIZE = 130
 DATA_LENGTH = 1024
 LEARNING_RATE = 0.0005
 
@@ -22,7 +24,7 @@ LEARNING_RATE = 0.0005
 get data
 """
 # all the source datasets
-source_dataset = AllHTTPDatasetsCombined()
+source_dataset = LBNL_FTP_PKTDataset1()
 source_dataset.shuffle_dataset()
 source_preprocessor = NormalImagePreprocessor(source_dataset, DATA_LENGTH)
 
@@ -59,4 +61,5 @@ aept.run_training(num_epochs=NUM_EPOCHS)
 aept.set_testset(test_dataloader)
 aept.finalize_test()
 print("Hamming Distance Average: ", aept.get_hamming_metric(num_batches=8))
+
 
