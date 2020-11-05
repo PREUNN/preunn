@@ -34,7 +34,7 @@ test_dataloader = DataLoader(dataset=test_preprocessor, batch_size=BATCH_SIZE, s
 """
 create or load model
 """
-backbone = load_model("AEimage.pt", AE)
+backbone = load_model("AEimage_http.pt", AE)
 # backbone = None
 try:
     with open(MODEL_SAVE_PATH, 'rb') as infile:

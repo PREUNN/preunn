@@ -6,10 +6,11 @@ ASCII_SIZE = 128
 
 def letter_tensor_to_char(tensor, coded=False, num_clusters=16):
     """
-    Turns a single one-hot-encoded tensor (for a char) back into a char. Returns special strings at EOP/SOP. Assuming
-    128 character ASCII table.
+    Turns a single one-hot-encoded tensor (for a char) back into a char. Returns
+    special strings at EOP/SOP. Assuming 128 character ASCII table.
     :param tensor: One hot encoded tensor
-    :param coded: If the tensor is using indexed (=False) or one hot encoding (=True)
+    :param coded: If the tensor is using indexed (=False) or one hot encoding
+    (=True)
     :param num_clusters: Number of clusters to be assumed
     :return: Char of the tensor or None if outside of ascii
     """
@@ -50,9 +51,11 @@ def char_to_letter_tensor(char: str, alphabet_size: int):
 
 def print_sample(sample, coded=False):
     """
-    Printing a one-hot encoded string tensor back into a char. Tensor needs to be 1 dimensional.
+    Printing a one-hot encoded string tensor back into a char. Tensor needs to
+    be 1 dimensional.
     :param sample: Sample tensor to print
-    :param coded: If the tensor is using indexed (=False) or one hot encoding (=True)
+    :param coded: If the tensor is using indexed (=False) or one hot encoding
+    (=True)
     :return: None
     """
     # parameter checks
@@ -69,7 +72,8 @@ def sequence_tensor_to_string_list(tensor, coded=False):
     """
     Turns a sequence tensor (one-hot encoded) into a list of strings.
     :param tensor: Tensor of shape "batchsize * sequence length * coding"
-    :param coded: If the tensor is using indexed (=False) or one hot encoding (=True)
+    :param coded: If the tensor is using indexed (=False) or one hot encoding
+    (=True)
     :return: List of strings from the tensor
     """
     # parameter checks

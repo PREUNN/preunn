@@ -1,16 +1,19 @@
-from data.postprocessing.sequence_postprocessing.processing import *
-from data.postprocessing.image_postprocessing.processing import *
+from data.postprocessing.sequence_postprocessing.processing \
+    import sequence_tensor_to_string_list
+from data.postprocessing.image_postprocessing.processing \
+    import image_tensor_to_string_list
 from models.abstract_personaltrainer import AbstractPersonalTrainer
 from torch.autograd import Variable
-from models.auto_encoder import *
-
+import torch
 
 class AutoEncoderPersonalTrainer(AbstractPersonalTrainer):
     """
     Training and testing class for auto encoder
     """
-    def __init__(self, model, training_data, test_data, log_interval, model_save_path, criterion, optimizer):
-        super().__init__(model, training_data, test_data, log_interval, model_save_path, criterion, optimizer)
+    def __init__(self, model, training_data, test_data, log_interval,
+                 model_save_path, criterion, optimizer):
+        super().__init__(model, training_data, test_data, log_interval,
+                         model_save_path, criterion, optimizer)
         return
 
     def train(self, epoch):
@@ -43,8 +46,10 @@ class AutoEncoderPersonalTrainer(AbstractPersonalTrainer):
             # logging interval
             if batch_id % self.log_interval == 0 and batch_id != 0:
                 train_loss /= self.log_interval
-                self.print_training_loss(epoch=epoch, batch_id=batch_id, batch_size=len(data), loss=train_loss)
-                print(sequence_tensor_to_string_list(output[0].unsqueeze(0), coded=True)[0])
+                self.print_training_loss(epoch=epoch, batch_id=batch_id,
+                                         batch_size=len(data), loss=train_loss)
+                print(sequence_tensor_to_string_list(output[0].unsqueeze(0),
+                                                     coded=True)[0])
                 self.model.store_model(self.model_save_path)
             if batch_id % self.log_interval == 0:
                 train_loss = 0
@@ -77,7 +82,8 @@ class AutoEncoderPersonalTrainer(AbstractPersonalTrainer):
                 # logging interval
                 if batch_id % self.log_interval == 0 and batch_id != 0:
                     test_loss /= self.log_interval
-                    self.print_test_loss(epoch=epoch, batch_id=batch_id, batch_size=len(data), loss=test_loss)
+                    self.print_test_loss(epoch=epoch, batch_id=batch_id,
+                                         batch_size=len(data), loss=test_loss)
                     test_loss = 0
         self.model.train()
         return
@@ -96,16 +102,14 @@ class AutoEncoderPersonalTrainer(AbstractPersonalTrainer):
             for batch_id, (item, _) in enumerate(self.test_data):
                 item = item.to(self.device)
                 output = self.model(item)
-                ""
                 output_string = image_tensor_to_string_list(output)
                 item_string = image_tensor_to_string_list(item)
-                # output_string = sequence_tensor_to_string_list(output, coded=True)
-                # item_string = sequence_tensor_to_string_list(item)
-                ""
 
                 # getting hamming distance for each data sample in string form
                 for i in range(len(item_string)):
-                    sum_hamming_distance += sum(c1 != c2 for c1, c2 in zip(item_string[i], output_string[i]))
+                    sum_hamming_distance += sum(c1 != c2 for c1, c2
+                                                in zip(item_string[i],
+                                                       output_string[i]))
                 if batch_id == num_batches-1:
                     break
         self.model.train()

@@ -1,4 +1,5 @@
-from data.postprocessing.image_postprocessing.processing import *
+from data.postprocessing.image_postprocessing.processing \
+    import image_tensor_to_string_list
 from models.abstract_personaltrainer import AbstractPersonalTrainer
 from torch.autograd import Variable
 import matplotlib.pyplot as plt
@@ -10,9 +11,11 @@ class ConvolutionalNeuralNetworkPersonalTrainer(AbstractPersonalTrainer):
     """
     Training and testing class for convolutional neural networks
     """
-    def __init__(self, model, training_data, test_data, log_interval, model_save_path, criterion, optimizer):
+    def __init__(self, model, training_data, test_data, log_interval,
+                 model_save_path, criterion, optimizer):
 
-        super().__init__(model, training_data, test_data, log_interval, model_save_path, criterion, optimizer)
+        super().__init__(model, training_data, test_data, log_interval,
+                         model_save_path, criterion, optimizer)
         self.fig2, (self.ax3, self.ax4) = plt.subplots(2, sharey=True)
         self.ax3.set(xlabel="Iterations", ylabel="%")
         self.ax3.set_title("Training Accuracy")
@@ -53,8 +56,11 @@ class ConvolutionalNeuralNetworkPersonalTrainer(AbstractPersonalTrainer):
             # logging interval
             if batch_id % self.log_interval == 0 and batch_id != 0:
                 train_logging_loss /= self.log_interval
-                self.print_training_loss(epoch=epoch, batch_id=batch_id, batch_size=len(data), loss=train_logging_loss)
-                accuracy = (100. * correct / (self.log_interval * len(data))).item()
+                self.print_training_loss(epoch=epoch, batch_id=batch_id,
+                                         batch_size=len(data),
+                                         loss=train_logging_loss)
+                accuracy = (100. * correct / (self.log_interval * len(
+                    data))).item()
                 print("Train Accuracy: ", accuracy)
                 self.training_accuracies.append(accuracy)
                 train_logging_loss = 0
@@ -93,8 +99,11 @@ class ConvolutionalNeuralNetworkPersonalTrainer(AbstractPersonalTrainer):
                 # logging interval
                 if batch_id % self.log_interval == 0 and batch_id != 0:
                     test_logging_loss /= self.log_interval
-                    self.print_test_loss(epoch=epoch, batch_id=batch_id, batch_size=len(data), loss=test_logging_loss)
-                    accuracy = (100. * correct / (self.log_interval * len(data))).item()
+                    self.print_test_loss(epoch=epoch, batch_id=batch_id,
+                                         batch_size=len(data),
+                                         loss=test_logging_loss)
+                    accuracy = (100. * correct / (self.log_interval * len(
+                        data))).item()
                     print("Test Accuracy: ", accuracy)
                     self.test_accuracies.append(accuracy)
                     test_logging_loss = 0
@@ -163,7 +172,8 @@ class ConvolutionalNeuralNetworkPersonalTrainer(AbstractPersonalTrainer):
 
             # display routine
             if display:
-                heatmap = cv2.resize(heatmap.data[0, :].unsqueeze(0).numpy(), (data.size()[2], 100))
+                heatmap = cv2.resize(heatmap.data[0, :].unsqueeze(0).numpy(),
+                                     (data.size()[2], 100))
                 fig, ax = plt.subplots(1, figsize=(15, 3))
 
                 # set graphics
@@ -172,7 +182,8 @@ class ConvolutionalNeuralNetworkPersonalTrainer(AbstractPersonalTrainer):
                 title = image_tensor_to_string_list(data[0].unsqueeze(0))[0]
                 colored_title = ""
                 for i in range(len(title)):
-                    colored_title += termcolor.colored(title[i], get_color(heatmap[0][i]))
+                    colored_title += termcolor.colored(title[i],
+                                                       get_color(heatmap[0][i]))
                 print("\n", colored_title)
                 plt.yticks([])
                 fig.show()

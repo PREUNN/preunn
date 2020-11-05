@@ -26,7 +26,8 @@ def get_clustering_accuracy(clusters: []):
     :param clusters: List of clusters
     :return: Accuracy found
     """
-    check_list = ["GET", "HTTP/1.1", "placeholder1", "placeholder2", "POST", "HEAD", "DELETE", "OPTIONS", "PUT", "TRACE", "CONNECT"]
+    check_list = ["GET", "HTTP/1.1", "placeholder1", "placeholder2", "POST",
+                  "HEAD", "DELETE", "OPTIONS", "PUT", "TRACE", "CONNECT"]
     accuracy_matrix = np.zeros([16, 11])
     for i in range(len(clusters)):
         try:

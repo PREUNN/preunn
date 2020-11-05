@@ -1,4 +1,4 @@
-from data.source_datasets import *
+from data.source_datasets.datasets import AbstractDataset
 from torch.utils.data import Dataset
 from abc import ABC, abstractmethod
 import random

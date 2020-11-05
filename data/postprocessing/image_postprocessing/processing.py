@@ -1,4 +1,5 @@
-import numpy, torch
+import numpy
+import torch
 
 
 def image_tensor_to_string_list(tensor):
@@ -12,7 +13,9 @@ def image_tensor_to_string_list(tensor):
     MIN = 0
 
     string_list = []
-    copy = torch.clone(tensor).detach_()    # copy with detach for use in mid of training
+
+    # copy with detach for use in mid of training
+    copy = torch.clone(tensor).detach_()
     copy = copy.cpu()
 
     # iterating over tensor elements

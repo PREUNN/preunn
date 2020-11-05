@@ -51,8 +51,11 @@ class AEEmbedding(AbstractArchitecture):
         self.stride = 4
 
         self.emb = nn.Embedding(130, self.hidden_size)
-        self.conv = nn.Conv1d(self.hidden_size, self.hidden_size, kernel_size=self.kernel_size, stride=self.stride)
-        self.deconv = nn.ConvTranspose1d(self.hidden_size, self.hidden_size, kernel_size=self.kernel_size, stride=self.stride)
+        self.conv = nn.Conv1d(self.hidden_size, self.hidden_size,
+                              kernel_size=self.kernel_size, stride=self.stride)
+        self.deconv = nn.ConvTranspose1d(self.hidden_size, self.hidden_size,
+                                         kernel_size=self.kernel_size,
+                                         stride=self.stride)
         self.fc = nn.Linear(self.hidden_size, 130)
 
     def forward(self, x):

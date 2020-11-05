@@ -1,22 +1,29 @@
-from models.long_short_term_memory import *
+from data.source_datasets.datasets import IEEEHTTPDataset1, IEEEHTTPDataset2, \
+    IEEEHTTPDataset3, NitrobaHTTPDataset
+from data.preprocessors.image_preprocessing.image_preprocessors \
+    import ClusteringPreprocessor
+from models.long_short_term_memory.architecture import LSTMNetworkSR
+from models.long_short_term_memory.personal_trainer \
+    import LongShortTermMemoryPersonalTrainer
 from torch.utils.data import DataLoader
-from minisom import MiniSom
-from main.helper import *
-from data import *
-import torch
+from main.helper import load_model
+import torch.nn as nn
 import pickle
+import torch
+import os
 
 
 """
 global variables for training purpose
 """
 LOG_INTERVAL = 2
-MODEL_SAVE_PATH = "LSTM.pt"
-BACKBONE1_SAVE_PATH = "AEimage.pt"
-BACKBONE2_SAVE_PATH = "SOMAE1.p"
+MODEL_SAVE_PATH = "LSTM_http.pt"
+BACKBONE1_SAVE_PATH = "AEimage_http.pt"
+BACKBONE2_SAVE_PATH = "SOMAE1_http.p"
 NUM_EPOCHS = 100
 BATCH_SIZE = 32
 SEQ_LENGTH = 6
+DATA_LENGTH = 1024
 
 """
 get data
@@ -44,17 +51,22 @@ if os.path.isfile(BACKBONE1_SAVE_PATH):
 with open(BACKBONE2_SAVE_PATH, 'rb') as infile:
     backbone.append(pickle.load(infile))
     print("loaded som")
-train_preprocessor = ClusteringPreprocessor(source_dataset=train_dataset, data_length=1024,
-                                            feature_extractor=backbone[0], som=backbone[1], sequence_length=SEQ_LENGTH)
-validation_preprocessor = ClusteringPreprocessor(source_dataset=validation_dataset, data_length=1024,
-                                                 feature_extractor=backbone[0], som=backbone[1], sequence_length=SEQ_LENGTH)
-test_preprocessor = ClusteringPreprocessor(source_dataset=test_dataset, data_length=1024,
-                                           feature_extractor=backbone[0], som=backbone[1], sequence_length=SEQ_LENGTH)
+train_preprocessor = ClusteringPreprocessor(train_dataset, DATA_LENGTH,
+                                            backbone[0], backbone[1],
+                                            SEQ_LENGTH)
+validation_preprocessor = ClusteringPreprocessor(validation_dataset,
+                                                 DATA_LENGTH, backbone[0],
+                                                 backbone[1], SEQ_LENGTH)
+test_preprocessor = ClusteringPreprocessor(test_dataset, DATA_LENGTH,
+                                           backbone[0], backbone[1], SEQ_LENGTH)
 
 # one dataloader each
-training_dataloader = DataLoader(dataset=train_preprocessor, batch_size=BATCH_SIZE, shuffle=False, drop_last=True)
-validation_dataloader = DataLoader(dataset=validation_preprocessor, batch_size=BATCH_SIZE, shuffle=False, drop_last=True)
-test_dataloader = DataLoader(test_preprocessor, batch_size=BATCH_SIZE, shuffle=False, drop_last=True)
+training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=False,
+                                 drop_last=True)
+validation_dataloader = DataLoader(validation_preprocessor, BATCH_SIZE,
+                                   shuffle=False, drop_last=True)
+test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=False,
+                             drop_last=True)
 
 """
 prepare teachers
@@ -65,8 +77,10 @@ criterion = nn.CrossEntropyLoss()
 """
 run personal training
 """
-lstmpt = LongShortTermMemoryPersonalTrainer(model, training_dataloader, validation_dataloader, LOG_INTERVAL,
-                                            MODEL_SAVE_PATH, criterion, optimizer)
+lstmpt = LongShortTermMemoryPersonalTrainer(model, training_dataloader,
+                                            validation_dataloader, LOG_INTERVAL,
+                                            MODEL_SAVE_PATH, criterion,
+                                            optimizer)
 lstmpt.run_training(num_epochs=NUM_EPOCHS)
 lstmpt.set_testset(dataloader=test_dataloader)
 lstmpt.finalize_test()

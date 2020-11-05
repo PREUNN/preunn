@@ -1,6 +1,6 @@
 from models.abstract_architecture import AbstractArchitecture
-from abc import ABC
 import torch.nn as nn
+from abc import ABC
 
 
 class AbstractLSTMNetwork(AbstractArchitecture, ABC):
@@ -42,13 +42,15 @@ class AbstractCELSTMNetwork(AbstractArchitecture, ABC):
 
         # encoder
         self.emb = nn.Embedding(self.input_size, self.hidden_size)
-        self.conv = nn.Conv1d(self.hidden_size, self.hidden_size, kernel_size=4, stride=4)
+        self.conv = nn.Conv1d(self.hidden_size, self.hidden_size,
+                              kernel_size=4, stride=4)
 
         # lstm
         self.lstm = nn.LSTM(self.hidden_size, self.hidden_size, self.layers)
 
         # decoder
-        self.deconv = nn.ConvTranspose1d(self.hidden_size, self.hidden_size, kernel_size=4, stride=4)
+        self.deconv = nn.ConvTranspose1d(self.hidden_size, self.hidden_size,
+                                         kernel_size=4, stride=4)
         self.fc = nn.Linear(self.hidden_size, self.input_size)
         self.softmax = nn.LogSoftmax(2)
 
@@ -81,20 +83,26 @@ class LSTMNetworkFRE(AbstractCELSTMNetwork):
     num_classes = 1
 
     def __init__(self):
-        super(LSTMNetworkFRE, self).__init__(input_size=self.ascii_size + 2*self.num_classes, hidden_size=10, layers=1)
+        super(LSTMNetworkFRE, self).__init__(input_size=self.ascii_size
+                                             + 2 * self.num_classes,
+                                             hidden_size=10, layers=1)
 
 
 class LSTMNetworkSR(AbstractLSTMNetwork):
     num_classes = 16
 
     def __init__(self):
-        super(LSTMNetworkSR, self).__init__(input_size=self.num_classes, hidden_size=self.num_classes, layers=1)
+        super(LSTMNetworkSR, self).__init__(input_size=self.num_classes,
+                                            hidden_size=self.num_classes,
+                                            layers=1)
 
 
 class LSTMNetworkSG(AbstractCELSTMNetwork):
     num_classes = 16
 
     def __init__(self):
-        super(LSTMNetworkSG, self).__init__(input_size=self.ascii_size + 2*self.num_classes, hidden_size=100, layers=1)
+        super(LSTMNetworkSG, self).__init__(input_size=self.ascii_size
+                                            + 2 * self.num_classes,
+                                            hidden_size=100, layers=1)
 
 

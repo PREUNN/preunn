@@ -1,7 +1,11 @@
-from data.source_datasets.data_parser import *
+from data.source_datasets.data_parser import AbstractProtocolParser, \
+    HTTPParser, FTPParser
 from torch.utils.data import Dataset
-from abc import ABC, abstractmethod
-import os, random, torch, copy
+from abc import ABC
+import random
+import torch
+import copy
+import os
 
 
 class AbstractDataset(Dataset, ABC):
@@ -19,7 +23,8 @@ class AbstractDataset(Dataset, ABC):
 
     def retrieve_dataset(self):
         """
-        Loading routine for the dataset, will reload and save if the parsed data is unavailable
+        Loading routine for the dataset, will reload and save if the parsed data
+        is unavailable
         :return: Loaded/parsed dataset
         """
         # file already exists parsed
@@ -59,7 +64,8 @@ class AbstractDataset(Dataset, ABC):
     def split(self, split_value: float):
         """
         Function to split the dataset and returns 2 new datasets accordingly
-        :param split_value: Value of how to split the data. Needs to be inside the interval [0, 1]
+        :param split_value: Value of how to split the data. Needs to be inside
+        the interval [0, 1]
         :return: 2 new datasets
         """
         # parameter checks
@@ -232,9 +238,9 @@ class LBNL_FTP_PKTDatasetCombined(AbstractFTPDataset):
     def __init__(self):
         super().__init__("/FTP/LBNL-FTP-PKT/lbnl-ftp-only_part1")
         datasets = []
-        datasets.append(LBNL_FTP_PKTDataset2)
-        datasets.append(LBNL_FTP_PKTDataset3)
-        datasets.append(LBNL_FTP_PKTDataset4)
+        datasets.append(LBNL_FTP_PKTDataset2())
+        datasets.append(LBNL_FTP_PKTDataset3())
+        datasets.append(LBNL_FTP_PKTDataset4())
         for dataset in datasets:
             self.merge(dataset)
 

@@ -20,7 +20,8 @@ def one_hot_encode_string(string):
             if 0 <= char <= 256:
                 tensor[c] = char
             else:
-                tensor[c] = random.randint(0, 129)  # excluding chinese characters
+                # excluding chinese characters
+                tensor[c] = random.randint(0, 129)
         except:
             tensor[c] = random.randint(0, 129)
     return tensor

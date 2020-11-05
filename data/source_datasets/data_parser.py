@@ -1,4 +1,4 @@
-from data.source_datasets.protocol_types import *
+from data.source_datasets.protocol_types import Protocol
 import scapy.all
 import abc
 import os
@@ -30,8 +30,9 @@ class HTTPParser(AbstractProtocolParser):
 
     def parse(self, filepath):
         """
-        This is the main reading method for the provided http datasets as given in the path variables above. The method
-        reads pcap files at location filepath. Also filters bad http statements
+        This is the main reading method for the provided http datasets as given
+        in the path variables above. The method reads pcap files at location
+        filepath. Also filters bad http statements
         :param filepath: Location of the dataset pcap
         :return: List of all the read http statements
         """
@@ -54,15 +55,19 @@ class HTTPParser(AbstractProtocolParser):
                     # get application layer data
                     if packet.dport == 80 or packet.sport == 80:
                         data = packet.payload.original
-                        end_index = data.find(b'\x0d\x0a\x0d\x0a') + 4  # End of http header, only data follows
+
+                        # End of http header, only data follows
+                        end_index = data.find(b'\x0d\x0a\x0d\x0a') + 4
                         http_payload += str(data[:end_index].decode("utf-8"))
                         break
                 except:
                     break
 
             # check for validity of package
-            check_validity_list = ["OPTIONS", "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "CONNECT", "HTTP/1.1"]
-            if any(method in http_payload for method in check_validity_list) and len(http_payload) > 20:
+            check_validity_list = ["OPTIONS", "GET", "HEAD", "POST", "PUT",
+                                   "DELETE", "TRACE", "CONNECT", "HTTP/1.1"]
+            if any(method in http_payload for method in check_validity_list) \
+                    and len(http_payload) > 20:
                 if any(ord(c) > 127 for c in http_payload):
                     print(http_payload)
                     continue

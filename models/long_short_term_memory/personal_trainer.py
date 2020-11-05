@@ -1,4 +1,5 @@
-from data.postprocessing.sequence_postprocessing.processing import *
+from data.postprocessing.sequence_postprocessing.processing \
+    import sequence_tensor_to_string_list
 from models.abstract_personaltrainer import AbstractPersonalTrainer
 from data.postprocessing.image_postprocessing.processing import *
 import re, random
@@ -9,8 +10,10 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
     """
     Training and testing class for LSTMs
     """
-    def __init__(self, model, training_data, test_data, log_interval, model_save_path, criterion, optimizer):
-        super().__init__(model, training_data, test_data, log_interval, model_save_path, criterion, optimizer)
+    def __init__(self, model, training_data, test_data, log_interval,
+                 model_save_path, criterion, optimizer):
+        super().__init__(model, training_data, test_data, log_interval,
+                         model_save_path, criterion, optimizer)
         return
 
     def train(self, epoch):
@@ -47,7 +50,8 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
             # logging interval
             if batch_id % self.log_interval == 0 and batch_id != 0:
                 loss_sum /= self.log_interval
-                self.print_training_loss(epoch=epoch, batch_id=batch_id, batch_size=batch_size, loss=loss_sum)
+                self.print_training_loss(epoch=epoch, batch_id=batch_id,
+                                         batch_size=batch_size, loss=loss_sum)
                 self.model.store_model(self.model_save_path)
             if batch_id % self.log_interval == 0:
                 loss_sum = 0
@@ -78,7 +82,8 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
             # logging interval
             if batch_id % self.log_interval == 0 and batch_id != 0:
                 loss_sum /= self.log_interval
-                self.print_test_loss(epoch=epoch, batch_id=batch_id, batch_size=batch_size, loss=loss_sum)
+                self.print_test_loss(epoch=epoch, batch_id=batch_id,
+                                     batch_size=batch_size, loss=loss_sum)
             if batch_id % self.log_interval == 0:
                 loss_sum = 0
 
@@ -87,7 +92,8 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
 
     def create_output(self, item):
         with torch.no_grad():
-            return self.sample(data=item, length=item.shape[-1], random_delimiter=8)
+            return self.sample(data=item, length=item.shape[-1],
+                               random_delimiter=8)
 
     def sample(self, random_delimiter: int, length: int, data):
         """
@@ -128,7 +134,9 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
 
         # iterating over test data for initialization vectors
         for _, (item, _) in enumerate(self.test_data):
-            sample_sequence, _ = self.sample(random_delimiter=3, length=item.shape[1], data=item.to(self.device))
+            sample_sequence, _ = self.sample(random_delimiter=3,
+                                             length=item.shape[1],
+                                             data=item.to(self.device))
 
             # evaluating each sample separately and create network packages
             for each in sample_sequence:
@@ -138,14 +146,17 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
                     if each != "":
                         print(each)
                         statement_list.append(each)
-                        address = str(random.randint(1, 192))+"."+str(random.randint(1, 192))+\
-                                  "."+str(random.randint(1, 192))+"."+str(random.randint(1, 192))
-                        package = Ether() / IP(dst=address) / TCP(dport=80, flags='S') / each
+                        address = str(random.randint(1, 192)) + "." + \
+                                  str(random.randint(1, 192)) + "." + \
+                                  str(random.randint(1, 192)) + "." + \
+                                  str(random.randint(1, 192))
+                        package = Ether() / IP(dst=address)\
+                                  / TCP(dport=80, flags='S') / each
                         package_list.append(package)
                 if len(package_list) > 1000:
                     package_list = package_list[:1000]
                     break
-            wrpcap("test.pcap", package_list)
+            wrpcap("test_http.pcap", package_list)
             break
         return
 
@@ -159,16 +170,22 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
         batch_size = 0
         for batch_id, (item, target) in enumerate(self.test_data):
             batch_size = item.shape[0]
-            sample_sequence, likelihood = self.sample(random_delimiter=1000000, length=1, data=item.to(self.device))
-            avg_correct += sum(torch.eq(sample_sequence[:, -1].cpu(), target[:, -1].cpu()))
+            sample_sequence, likelihood = self.sample(random_delimiter=1000000,
+                                                      length=1,
+                                                      data=item.to(self.device))
+            avg_correct += sum(torch.eq(sample_sequence[:, -1].cpu(),
+                                        target[:, -1].cpu()))
             avg_likelihood += torch.sum(likelihood.cpu())
             print("Cluster Sequence: ", sample_sequence[0, -4:].cpu().numpy())
-            print("Likelihood of last element: ", int(likelihood[0].item() * 1000) / 10, "%")
+            print("Likelihood of last element: ", int(likelihood[0].item()
+                                                      * 1000) / 10, "%")
             print("\n\n")
             print(batch_id/len(self.test_data), " done")
-        avg_likelihood = avg_likelihood.item() / (len(self.test_data)*batch_size)
-        avg_correct = avg_correct.item() / (len(self.test_data)*batch_size)
-        print("Average on correctly predicted class: ", int(avg_correct*1000)/10, "%")
-        print("Average on confidence: ", int(avg_likelihood*1000)/10, "%")
+        avg_likelihood = avg_likelihood.item() / (len(self.test_data)
+                                                  * batch_size)
+        avg_correct = avg_correct.item() / (len(self.test_data) * batch_size)
+        print("Average on correctly predicted class: ", int(avg_correct
+                                                            * 1000) / 10, "%")
+        print("Average on confidence: ", int(avg_likelihood * 1000) / 10, "%")
         return
 

@@ -1,7 +1,7 @@
-import torch
 from torch import Tensor
 import numpy as np
 import random
+import torch
 
 
 def padding_string(string: str, data_length: int, padder="0"):
@@ -47,7 +47,8 @@ def string_to_tensor(string: str):
 
 def tensor_normalization(tensor: Tensor, min: int, max: int):
     """
-    Method to normalise the values inside an ascii tensor to the [-1, 1] interval
+    Method to normalise the values inside an ascii tensor to the [-1, 1]
+    interval
     :param tensor: Tensor to be normalized
     :param min: Minimum of dataset
     :param max: Maximum of dataset
@@ -64,8 +65,9 @@ def tensor_normalization(tensor: Tensor, min: int, max: int):
 
 def scramble_string(string: str, length_of_piece: int):
     """
-    This method is a core piece of preprocessing for CNNs. It will take a string and cut it into pieces of length
-    length_of_piece. These pieces will then be put in a random order and returned.
+    This method is a core piece of preprocessing for CNNs. It will take a string
+    and cut it into pieces of length length_of_piece. These pieces will then
+    be put in a random order and returned.
     :param string: String to be scrambled
     :param length_of_piece: Assigns the length of the pieces in which the data
     will be cut
@@ -93,7 +95,8 @@ def scramble_string(string: str, length_of_piece: int):
 
 def repeat_string(string: str, data_length: int):
     """
-    Method to elongate a string by repeating it and cutting it off at data_length
+    Method to elongate a string by repeating it and cutting it off at
+    data_length
     :param string: Base string to elongate
     :param data_length: Length the repeater_string should have on return
     :return: New string of length data_length
