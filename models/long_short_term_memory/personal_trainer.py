@@ -151,7 +151,7 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
                                   str(random.randint(1, 192)) + "." + \
                                   str(random.randint(1, 192))
                         package = Ether() / IP(dst=address)\
-                                  / TCP(dport=80, flags='S') / each
+                                  / TCP(dport=21, flags='S') / each
                         package_list.append(package)
                 if len(package_list) > 1000:
                     package_list = package_list[:1000]

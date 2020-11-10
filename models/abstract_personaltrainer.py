@@ -63,12 +63,12 @@ class AbstractPersonalTrainer(ABC):
             self.train(epoch)
             self.test(epoch)
             maximum = self.get_loss_maximum()
-            self.ax1.plot(self.training_loss_curve, "tab:blue")
-            self.ax1.set_ylim(bottom=0 - maximum / 20, top=maximum*1.05)
-            self.ax2.plot(self.test_loss_curve, "tab:orange")
-            self.ax2.set_ylim(bottom=0 - maximum / 20, top=maximum*1.05)
             self.model.store_model(self.model_save_path)
-            self.fig1.show()
+        self.ax1.plot(self.training_loss_curve, "tab:blue")
+        self.ax1.set_ylim(bottom=0 - maximum / 20, top=maximum*1.05)
+        self.ax2.plot(self.test_loss_curve, "tab:orange")
+        self.ax2.set_ylim(bottom=0 - maximum / 20, top=maximum*1.05)
+        self.fig1.show()
         return
 
     def get_loss_maximum(self):

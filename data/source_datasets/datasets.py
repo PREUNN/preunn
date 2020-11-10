@@ -47,7 +47,7 @@ class AbstractDataset(Dataset, ABC):
         assert idx <= self.__len__()
         # hot fix
         if len(self.data[idx]) < 20:
-            return self.__getitem__(idx+1)
+            return self.__getitem__(idx + 1)
         return self.data[idx]
 
     def merge(self, new_dataset: Dataset):
@@ -244,3 +244,29 @@ class LBNL_FTP_PKTDatasetCombined(AbstractFTPDataset):
         for dataset in datasets:
             self.merge(dataset)
 
+
+from matplotlib import pyplot as plt
+
+if __name__ == "__main__":
+    ftp = LBNL_FTP_PKTDatasetCombined()
+    count = 0
+    for x in ftp:
+        try:
+            int(x[:2])
+        except:
+            count += 1
+    print(count)
+    # data = AllHTTPDatasetsCombined()
+    # check_validity_list = ["OPTIONS", "GET", "HEAD", "POST", "PUT",
+    #                        "DELETE", "TRACE", "CONNECT", "HTTP/1.1"]
+    # dic = {i: 0 for i in check_validity_list}
+    # for each in data:
+    #     for key in check_validity_list:
+    #         if key in each:
+    #             dic[key] += 1
+    # print(dic)
+    # plt.bar(dic.keys(), dic.values())
+    # plt.xlabel("HTTP Type")
+    # plt.ylabel("Number of instances")
+    # plt.show()
+    # print("")

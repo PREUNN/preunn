@@ -50,7 +50,6 @@ class AutoEncoderPersonalTrainer(AbstractPersonalTrainer):
                                          batch_size=len(data), loss=train_loss)
                 print(image_tensor_to_string_list(data[0].unsqueeze(0)))
                 print(image_tensor_to_string_list(output[0].unsqueeze(0)))
-                self.model.store_model(self.model_save_path)
             if batch_id % self.log_interval == 0:
                 train_loss = 0
         return
