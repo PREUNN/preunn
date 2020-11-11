@@ -78,3 +78,11 @@ ftp_commands = ["ABOR", "ACCT", "ADAT", "ALLO", "APPE", "AUTH", "CCC", "CDUP",
                 "RNFR", "RNTO", "SITE", "SIZE", "SMNT", "STAT", "STOR", "STOU",
                 "STRU", "SYST", "TYPE", "USER", "XCUP", "XMKD", "XPWD", "XRCP",
                 "XRMD", "XRSQ", "XSEM", "XSEN"]
+
+ftp_replys = ["1yz", "2yz", "3yz", "4yz", "5yz", "x0z", "x1z", "x2z", "x3z",
+              "x4z", "x5z"]
+
+ftp_codes = [110, 120, 125, 150, 200, 202, 211, 212, 213, 214, 215, 220, 221,
+             225, 226, 227, 228, 229, 230, 250, 257, 331, 332, 350, 421, 425,
+             426, 450, 452, 500, 501, 502, 503, 504, 521, 522, 530, 532, 550,
+             551, 552, 553, 554, 555]
