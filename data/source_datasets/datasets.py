@@ -45,9 +45,6 @@ class AbstractDataset(Dataset, ABC):
 
     def __getitem__(self, idx):
         assert idx <= self.__len__()
-        # hot fix
-        if len(self.data[idx]) < 20:
-            return self.__getitem__(idx + 1)
         return self.data[idx]
 
     def merge(self, new_dataset: Dataset):

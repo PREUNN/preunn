@@ -54,7 +54,7 @@ class SelfOrganizingMapPersonalTrainer:
         :return: None
         """
 
-    def get_accuracy_matrix(self):
+    def get_http_accuracy_matrix(self):
         """
         Evaluation method for clustering
         :return: Matrix of clustering

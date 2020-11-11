@@ -1,40 +1,48 @@
-from models.convolutional_neural_network.architecture import *
-from models.auto_encoder.architecture import *
-from models.self_organizing_map import *
+from data.source_datasets.datasets import LBNL_FTP_PKTDataset1
+from data.preprocessors.image_preprocessing.image_preprocessors import  \
+    NormalImagePreprocessor
+from models.auto_encoder.architecture import AE
+from models.self_organizing_map.personal_trainer import \
+    SelfOrganizingMapPersonalTrainer
 from torch.utils.data import DataLoader
 from minisom import MiniSom
-from main.helper import *
-from data import *
+from main.helper import load_model
 import pickle
+import numpy as np
+import copy
 
 
 """
 global variables for training purpose
 """
 LOG_INTERVAL = 300
-MODEL_SAVE_PATH = "SOMAEkleinTest.p"
-NUM_EPOCHS = 20
+MODEL_SAVE_PATH = "SOMAEk1_ftp.p"
+NUM_EPOCHS = 5
 BATCH_SIZE = 128
 
 """
 get data
 """
 # all the source datasets
-source_dataset = AllHTTPDatasetsCombined()
-source_preprocessor = NormalImagePreprocessor(source_dataset=source_dataset, data_length=1024)
+source_dataset = LBNL_FTP_PKTDataset1()
+source_dataset, _ = source_dataset.split(0.1)
+source_preprocessor = NormalImagePreprocessor(source_dataset=source_dataset,
+                                              data_length=1024)
 source_preprocessor.shuffle_dataset()
 
 # one preprocessor each
-train_preprocessor, test_preprocessor = source_preprocessor.split(split_value=0.9)
+train_preprocessor, test_preprocessor = source_preprocessor.split(0.9)
 
 # one dataloader each
-training_dataloader = DataLoader(dataset=train_preprocessor, batch_size=BATCH_SIZE, shuffle=True, drop_last=True)
-test_dataloader = DataLoader(dataset=test_preprocessor, batch_size=BATCH_SIZE, shuffle=True, drop_last=True)
+training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=True,
+                                 drop_last=True)
+test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True,
+                             drop_last=True)
 
 """
 create or load model
 """
-backbone = load_model("AEimage_http.pt", AE)
+backbone = load_model("AEimage_ftp.pt", AE)
 # backbone = None
 try:
     with open(MODEL_SAVE_PATH, 'rb') as infile:
@@ -46,7 +54,8 @@ except:
 """
 run personal training
 """
-sompt = SelfOrganizingMapPersonalTrainer(model, training_dataloader, test_dataloader, LOG_INTERVAL,
+sompt = SelfOrganizingMapPersonalTrainer(model, training_dataloader,
+                                         test_dataloader, LOG_INTERVAL,
                                          MODEL_SAVE_PATH, backbone)
 sompt.run_training(num_epochs=NUM_EPOCHS)
 with open(MODEL_SAVE_PATH, 'wb') as outfile:

@@ -48,4 +48,33 @@ def show_clusters(dataset, clusters, color="blue"):
     plt.ylabel("Number of HTTP messages")
     plt.show()
 
-
+import re
+count = 0
+dic = {each[0:4]: 0 for each in ftp_dataset}
+for each in sorted(dic.keys()):
+    print(each)
+# for each in ftp_dataset:
+#     # TODO regex check ftp
+#
+#     try:
+#         cond1 = each[3] == "-" or each[3] == " " \
+#                 or bytes(each[3], encoding="utf-8") == b"\x0d"
+#         cond2 = each[4] == "-" or each[4] == " " \
+#                 or bytes(each[4], encoding="utf-8") == b"\x0d"
+#         if not (cond1 or cond2):
+#             print(each)
+#             count += 1
+#     except:
+#         if len(each) != 3 and not("NOTICE" in each):
+#             print("too short :" + each)
+#             count += 1
+# print(count)
+#
+ftp_commands = ["ABOR", "ACCT", "ADAT", "ALLO", "APPE", "AUTH", "CCC", "CDUP",
+                "CONF", "CWD", "DELE", "ENC", "EPRT", "EPSV", "FEAT", "HELP",
+                "LANG", "LIST", "LPRT", "LPSV", "MDTM", "MIC", "MKD", "MLSD",
+                "MLST", "MODE", "NLST", "NOOP", "OPTS", "PASS", "PASV", "PBSZ",
+                "PORT", "PROT", "PWD", "QUIT", "REIN", "REST", "RETR", "RMD",
+                "RNFR", "RNTO", "SITE", "SIZE", "SMNT", "STAT", "STOR", "STOU",
+                "STRU", "SYST", "TYPE", "USER", "XCUP", "XMKD", "XPWD", "XRCP",
+                "XRMD", "XRSQ", "XSEM", "XSEN"]
