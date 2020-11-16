@@ -7,7 +7,29 @@ http_dataset = AllHTTPDatasetsCombined()
 ftp_dataset = LBNL_FTP_PKTDatasetCombined()
 
 http_types = ["OPTIONS", "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE",
-              "CONNECT", "HTTP/1.1"]
+              "CONNECT", "HTTP/1.1 2", "HTTP/1.1 3", "HTTP/1.1 4", "HTTP/1.1 5"]
+# http_types = ["OPTIONS", "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE",
+#               "CONNECT", "HTTP/1.1"]
+
+ftp_commands = ["ABOR", "ACCT", "ADAT", "ALLO", "APPE", "AUTH", "CCC", "CDUP",
+                "CONF", "CWD", "DELE", "ENC", "EPRT", "EPSV", "FEAT", "HELP",
+                "LANG", "LIST", "LPRT", "LPSV", "MDTM", "MIC", "MKD", "MLSD",
+                "MLST", "MODE", "NLST", "NOOP", "OPTS", "PASS", "PASV", "PBSZ",
+                "PORT", "PROT", "PWD", "QUIT", "REIN", "REST", "RETR", "RMD",
+                "RNFR", "RNTO", "SITE", "SIZE", "SMNT", "STAT", "STOR", "STOU",
+                "STRU", "SYST", "TYPE", "USER", "XCUP", "XMKD", "XPWD", "XRCP",
+                "XRMD", "XRSQ", "XSEM", "XSEN"]
+ftp_replys = ["1yz", "2yz", "3yz", "4yz", "5yz", "x0z", "x1z", "x2z", "x3z",
+              "x4z", "x5z"]
+ftp_codes = [110, 120, 125, 150, 200, 202, 211, 212, 213, 214, 215, 220, 221,
+             225, 226, 227, 228, 229, 230, 250, 257, 331, 332, 350, 421, 425,
+             426, 450, 452, 500, 501, 502, 503, 504, 521, 522, 530, 532, 550,
+             551, 552, 553, 554, 555]
+ftp_codes_str = [str(i) for i in ftp_codes]
+all_ftp_types = []
+all_ftp_types.extend(ftp_codes_str)
+all_ftp_types.extend(ftp_commands)
+all_ftp_types.extend(ftp_replys)
 
 
 def plot_length_sorted(dataset, color="blue"):
@@ -27,7 +49,7 @@ def plot_length_occ(dataset, color="blue"):
     plt.show()
 
 
-def find_all_scii_zeros():
+def find_all_ascii_zeros():
     count = 0
     for each in http_dataset:
         if each.find(str(b'\x00')) > 0:
@@ -37,52 +59,20 @@ def find_all_scii_zeros():
 
 
 def show_clusters(dataset, clusters, color="blue"):
-
-    dic = {each: 0 for each in http_types}
+    dic = {each: 0 for each in clusters}
+    count = 0
     for entry in dataset:
         for key in dic.keys():
             if key in entry:
                 dic[key] += 1
+                count += 1
     plt.bar(list(dic.keys()), list(dic.values()), color=color)
-    plt.xlabel("Type of HTTP message")
-    plt.ylabel("Number of HTTP messages")
+    plt.xticks(range(len(dic.keys())), [])
+    plt.xlabel("Type of " + str(dataset.protocol_type) + " message")
+    plt.ylabel("Number of " + str(dataset.protocol_type) + " messages")
     plt.show()
 
-import re
-count = 0
-dic = {each[0:4]: 0 for each in ftp_dataset}
-for each in sorted(dic.keys()):
-    print(each)
-# for each in ftp_dataset:
-#     # TODO regex check ftp
-#
-#     try:
-#         cond1 = each[3] == "-" or each[3] == " " \
-#                 or bytes(each[3], encoding="utf-8") == b"\x0d"
-#         cond2 = each[4] == "-" or each[4] == " " \
-#                 or bytes(each[4], encoding="utf-8") == b"\x0d"
-#         if not (cond1 or cond2):
-#             print(each)
-#             count += 1
-#     except:
-#         if len(each) != 3 and not("NOTICE" in each):
-#             print("too short :" + each)
-#             count += 1
-# print(count)
-#
-ftp_commands = ["ABOR", "ACCT", "ADAT", "ALLO", "APPE", "AUTH", "CCC", "CDUP",
-                "CONF", "CWD", "DELE", "ENC", "EPRT", "EPSV", "FEAT", "HELP",
-                "LANG", "LIST", "LPRT", "LPSV", "MDTM", "MIC", "MKD", "MLSD",
-                "MLST", "MODE", "NLST", "NOOP", "OPTS", "PASS", "PASV", "PBSZ",
-                "PORT", "PROT", "PWD", "QUIT", "REIN", "REST", "RETR", "RMD",
-                "RNFR", "RNTO", "SITE", "SIZE", "SMNT", "STAT", "STOR", "STOU",
-                "STRU", "SYST", "TYPE", "USER", "XCUP", "XMKD", "XPWD", "XRCP",
-                "XRMD", "XRSQ", "XSEM", "XSEN"]
 
-ftp_replys = ["1yz", "2yz", "3yz", "4yz", "5yz", "x0z", "x1z", "x2z", "x3z",
-              "x4z", "x5z"]
-
-ftp_codes = [110, 120, 125, 150, 200, 202, 211, 212, 213, 214, 215, 220, 221,
-             225, 226, 227, 228, 229, 230, 250, 257, 331, 332, 350, 421, 425,
-             426, 450, 452, 500, 501, 502, 503, 504, 521, 522, 530, 532, 550,
-             551, 552, 553, 554, 555]
+# Execution zone
+if __name__ == "__main__":
+    pass

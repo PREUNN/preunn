@@ -50,3 +50,39 @@ def get_clustering_accuracy(clusters: []):
             continue
     return accuracy_matrix
 
+
+def classify_ftp_statement(statement: str):
+    # USER / PASS / 331 / 230
+    # PORT / TYPE / MODE / 200 / 200 / 200 + 502 + 504
+    # PASV / 227
+    # QUIT / 221
+    # CWD / 250
+    # REST / 350
+    # LIST / RETR / SIZE / MDTM / 150 / 150 + 550 / 213 + 550 / 213 + 550
+    # HELP / SYST / 214 / 215
+    # ALLO / 202
+    # 220 Service ready for new user.(Welcome - Banner)
+    # Sonstiges
+    # 226 Closing data connection = > Nach RETR und PORT
+    ftp_type_list = {"Type1": ["USER", "PASS", "331", "230"],
+                     "Type2": ["PORT", "TYPE", "MODE", "200", "502", "504"],
+                     "Type3": ["PASV", "227"],
+                     "Type4": ["QUIT", "221"],
+                     "Type5": ["CWD", "250"],
+                     "Type6": ["REST", "350"],
+                     "Type7": ["LIST", "RETR", "SIZE", "MDTM", "150", "550",
+                               "213"],
+                     "Type8": ["HELP", "SYST", "214", "215"],
+                     "Type9": ["ALLO", "202"],
+                     "Type10": ["220"],
+                     "Type11": ["226"],
+                     "Type12": ["misc"]}
+
+    # check if any keyword is in the statement, return type accordingly
+    # miscellaneous is default
+    found_type = "Type12"   # == misc
+    for type in ftp_type_list:
+        if any(key_word in statement for key_word in ftp_type_list[type]):
+            found_type = type
+
+    return found_type

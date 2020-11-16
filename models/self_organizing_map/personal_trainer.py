@@ -56,7 +56,7 @@ class SelfOrganizingMapPersonalTrainer:
 
     def get_http_accuracy_matrix(self):
         """
-        Evaluation method for clustering
+        Evaluation method for http clustering
         :return: Matrix of clustering
         """
         winner_list = []
@@ -66,11 +66,13 @@ class SelfOrganizingMapPersonalTrainer:
                 new_data = self.backbone.create_output(item.cuda()).cpu()
             else:
                 new_data = item.cpu().squeeze(1)
+
             winners = np.array([self.model.winner(x)[1]
                                 for x in new_data.detach()])
             http_strings = image_tensor_to_string_list(item)
             winner_list.extend([(classify_http_statement(http), win)
                                 for http, win in zip(http_strings, winners)])
+
         accuracy_matrix = get_clustering_accuracy(winner_list)
 
         # rounding to 3 digits
@@ -78,4 +80,5 @@ class SelfOrganizingMapPersonalTrainer:
         accuracy_matrix = np.rint(accuracy_matrix)
         accuracy_matrix /= 1000
         return accuracy_matrix
+
 
