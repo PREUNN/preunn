@@ -8,23 +8,21 @@ from data.postprocessing.image_postprocessing.processing import \
     image_tensor_to_string_list
 
 
-def get_accuracy_matrix(trainer: SelfOrganizingMapPersonalTrainer,
-                        test_data: DataLoader) -> np.ndarray:
+def get_accuracy_matrix(trainer: SelfOrganizingMapPersonalTrainer):
     """
     Calculate and return the accuracy matrix for a given som and test data.
 
     :param trainer: Trained MiniSom model pt to be evaluated.
-    :param test_data: Data for which to test the som with.
     :return: Numpy array of num clusters * num classes from the som.
     """
 
     # constants
-    protocol = test_data.dataset.source_dataset.protocol_type
+    protocol = trainer.test_data.dataset.source_dataset.protocol_type
     num_classes = trainer.model.get_weights().shape[1]
     num_clusters = 12
 
     winner_list = []
-    for _, (item, _) in enumerate(test_data):
+    for _, (item, _) in enumerate(trainer.test_data):
         new_data = trainer.get_new_data(item)
         winners = np.array([trainer.model.winner(x)[1] for x in
                             new_data.detach()])

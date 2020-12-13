@@ -16,7 +16,7 @@ from matplotlib import pyplot as plt
 global variables for training purpose
 """
 LOG_INTERVAL = 100
-MODEL_SAVE_PATH = "SOMAE1_ftp_large64.p"
+MODEL_SAVE_PATH = "SOMAE1_ftp.p"
 NUM_EPOCHS = 5
 BATCH_SIZE = 128
 
@@ -29,7 +29,7 @@ source_preprocessor = NormalImagePreprocessor(source_dataset, data_length=1024)
 source_preprocessor.shuffle_dataset()
 
 # one preprocessor each
-train_preprocessor, test_preprocessor = source_preprocessor.split(0.9975)
+train_preprocessor, test_preprocessor = source_preprocessor.split(0.975)
 
 # one dataloader each
 training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=True,
@@ -55,19 +55,22 @@ run personal training
 sompt = SelfOrganizingMapPersonalTrainer(model, training_dataloader,
                                          test_dataloader, LOG_INTERVAL,
                                          MODEL_SAVE_PATH, backbone)
-# sompt.run_training(num_epochs=NUM_EPOCHS)
+sompt.run_training(num_epochs=NUM_EPOCHS)
 with open(MODEL_SAVE_PATH, 'wb') as outfile:
     pickle.dump(model, outfile)
 
-# metrics
-accuracy_matrix = metrics.get_accuracy_matrix(sompt, test_dataloader)
+"""
+metrics
+"""
+# accuracy matrix
+accuracy_matrix = metrics.get_accuracy_matrix(sompt)
 plt.matshow(accuracy_matrix)
 plt.title("General Clustering")
 plt.xlabel("FTP Types")
 plt.ylabel("SOM Clusters")
 plt.show()
 
-# get clusterwise share
+# clusterwise share
 clusterwise_matrix = metrics.get_clusterwise_share(accuracy_matrix)
 plt.matshow(clusterwise_matrix)
 plt.title("Clusterwise Share")
@@ -75,7 +78,7 @@ plt.xlabel("FTP Types")
 plt.ylabel("SOM Clusters")
 plt.show()
 
-# get typewise share
+# typewise share
 typewise_matrix = metrics.get_typewise_share(accuracy_matrix)
 plt.matshow(typewise_matrix)
 plt.title("Typewise Share")
@@ -85,10 +88,10 @@ plt.show()
 
 conf = metrics.get_confident_cluster_metric(clusterwise_matrix)
 relevant_conf = metrics.get_confident_cluster_metric(clusterwise_matrix,
-                                                      skip_zeros=True)
+                                                     skip_zeros=True)
 
-print(conf)
-print(relevant_conf)
+print("Confidence: " + str(conf))
+print("Relevant confidence: " + str(relevant_conf))
 with open("accuracy_matrix_ftp.p", 'wb') as outfile:
     pickle.dump(accuracy_matrix, outfile)
 with open("clusterwise_matrix_ftp.p", 'wb') as outfile:

@@ -1,11 +1,5 @@
-from data.postprocessing.sequence_postprocessing.processing \
-    import sequence_tensor_to_string_list
+import torch
 from models.abstract_personaltrainer import AbstractPersonalTrainer
-from data.postprocessing.image_postprocessing.processing import *
-from scapy.all import wrpcap, Ether, IP, TCP
-import re
-import random
-
 
 
 class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
@@ -93,15 +87,13 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
         self.model.train()
         return
 
-    def create_output(self, item):
-        with torch.no_grad():
-            return self.sample(data=item, length=item.shape[-1],
-                               random_delimiter=8)
-
     def sample(self, random_delimiter: int, length: int, data):
         """
         Subroutine to create a sample from the lstm
-        :return: returns tensor of created sample
+        :param random_delimiter: stepsize for when to sample by probability
+        :param length: length of the sample to be created
+        :param data: initialization data
+        :return: tensor of the created sample
         """
         likelihood = 0
         with torch.no_grad():
@@ -118,76 +110,23 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
                 if data.shape[1] == length:
                     data = data[:, 1:]
                 data = torch.cat([data, top_i], dim=1)
-
         return data, likelihood
 
-    def get_new_http_statements(self):
+    def sample_states(self, length: int, data):
         """
-        use as fuzzer base
-        :return:
+        Subroutine to create state samples from lstm
+        :param length: length of the sample to be created
+        :param data: initialization data
+        :return: tensor of the created sample
         """
-        splitter = ''
-        for x in range(1, 17):
-            splitter += 'EOP°' + str(x) + '\n\n|'
-            splitter += 'SOP°' + str(x) + '\n|'
-        splitter = splitter[:-1]
-        statement_list = []
-        package_list = []
-
-        # iterating over test data for initialization vectors
-        for _, (item, _) in enumerate(self.test_data):
-            sample_sequence, _ = self.sample(random_delimiter=3,
-                                             length=item.shape[1],
-                                             data=item.to(self.device))
-
-            # evaluating each sample separately and create network packages
-            for each in sample_sequence:
-                each = sequence_tensor_to_string_list(each.unsqueeze(0))[0]
-                temp_list = re.split(splitter, each)
-                for each in temp_list[1:-1]:
-                    if each != "":
-                        print(each)
-                        statement_list.append(each)
-                        address = str(random.randint(1, 192)) + "." + \
-                                  str(random.randint(1, 192)) + "." + \
-                                  str(random.randint(1, 192)) + "." + \
-                                  str(random.randint(1, 192))
-                        package = Ether() / IP(dst=address)\
-                                  / TCP(dport=21, flags='S') / each
-                        package_list.append(package)
-                if len(package_list) > 1000:
-                    package_list = package_list[:1000]
-                    break
-            wrpcap("test_http.pcap", package_list)
-            break
-        return
-
-    def get_cluster_prediction_metric(self):
-        """
-        Use as statemachine metric. Prints results
-        :return: None
-        """
-        avg_correct = 0
-        avg_likelihood = 0
-        batch_size = 0
-        for batch_id, (item, target) in enumerate(self.test_data):
-            batch_size = item.shape[0]
-            sample_sequence, likelihood = self.sample(random_delimiter=1000000,
-                                                      length=1,
-                                                      data=item.to(self.device))
-            avg_correct += sum(torch.eq(sample_sequence[:, -1].cpu(),
-                                        target[:, -1].cpu()))
-            avg_likelihood += torch.sum(likelihood.cpu())
-            print("Cluster Sequence: ", sample_sequence[0, -4:].cpu().numpy())
-            print("Likelihood of last element: ", int(likelihood[0].item()
-                                                      * 1000) / 10, "%")
-            print("\n\n")
-            print(batch_id/len(self.test_data), " done")
-        avg_likelihood = avg_likelihood.item() / (len(self.test_data)
-                                                  * batch_size)
-        avg_correct = avg_correct.item() / (len(self.test_data) * batch_size)
-        print("Average on correctly predicted class: ", int(avg_correct
-                                                            * 1000) / 10, "%")
-        print("Average on confidence: ", int(avg_likelihood * 1000) / 10, "%")
-        return
-
+        with torch.no_grad():
+            h = self.model.init_hidden(batch_size=data.shape[0])
+            for k in range(length):
+                h = tuple([each.data for each in h])
+                letter, h = self.model(data, h)
+                letter = torch.round(letter).long()
+                if data.shape[1] == length:
+                    data = data[:, 1:]
+                data = torch.cat([data, letter[:, data.shape[1]-1].unsqueeze(
+                    dim=1)], dim=1)
+        return data

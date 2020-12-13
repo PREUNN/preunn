@@ -1,3 +1,7 @@
+import torch.nn as nn
+import pickle
+import torch
+import os
 from data.source_datasets.datasets import AllHTTPDatasetsCombined
 from data.preprocessors.image_preprocessing.image_preprocessors \
     import ClusteringPreprocessor
@@ -6,10 +10,7 @@ from models.long_short_term_memory.personal_trainer \
     import LongShortTermMemoryPersonalTrainer
 from torch.utils.data import DataLoader
 from main.helper import load_model
-import torch.nn as nn
-import pickle
-import torch
-import os
+from main.state_recognition import metrics
 
 
 """
@@ -18,10 +19,10 @@ global variables for training purpose
 LOG_INTERVAL = 2
 MODEL_SAVE_PATH = "LSTM_http.pt"
 BACKBONE1_SAVE_PATH = "AEimage_http.pt"
-BACKBONE2_SAVE_PATH = "SOMAE1_http_large64.p"
+BACKBONE2_SAVE_PATH = "SOMAE1_http.p"
 NUM_EPOCHS = 5
 BATCH_SIZE = 128
-SEQ_LENGTH = 24
+SEQ_LENGTH = 4
 DATA_LENGTH = 1024
 
 """
@@ -46,7 +47,7 @@ with open(BACKBONE2_SAVE_PATH, 'rb') as infile:
     backbone.append(pickle.load(infile))
     print("loaded som")
 model = load_model(MODEL_SAVE_PATH,
-                   LSTMNetworkSR(backbone[1].get_weights.shape[1]))
+                   LSTMNetworkSR(backbone[1].get_weights().shape[1], 64, 1))
 
 train_preprocessor = ClusteringPreprocessor(train_dataset, DATA_LENGTH,
                                             backbone[0], backbone[1],
@@ -58,17 +59,17 @@ test_preprocessor = ClusteringPreprocessor(test_dataset, DATA_LENGTH,
                                            backbone[0], backbone[1], SEQ_LENGTH)
 
 # one dataloader each
-training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=False,
-                                 drop_last=True)
+training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE,
+                                 shuffle=False, drop_last=True)
 validation_dataloader = DataLoader(validation_preprocessor, BATCH_SIZE,
                                    shuffle=False, drop_last=True)
-test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=False,
-                             drop_last=True)
+test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE,
+                             shuffle=False, drop_last=True)
 
 """
 prepare teachers
 """
-optimizer = torch.optim.Adam(model.parameters(), lr=0.005, betas=(0.3, 0.9))
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001, betas=(0.3, 0.9))
 criterion = nn.MSELoss()
 
 """
@@ -78,7 +79,16 @@ lstmpt = LongShortTermMemoryPersonalTrainer(model, training_dataloader,
                                             validation_dataloader, LOG_INTERVAL,
                                             MODEL_SAVE_PATH, criterion,
                                             optimizer)
-lstmpt.run_training(num_epochs=NUM_EPOCHS)
+# lstmpt.run_training(num_epochs=NUM_EPOCHS)
 lstmpt.set_testset(dataloader=test_dataloader)
-lstmpt.finalize_test()
-lstmpt.get_cluster_prediction_metric()
+# lstmpt.finalize_test()
+
+"""
+metrics
+"""
+# cluster prediction clusterwise
+with open("accuracy_matrix_http.p", 'rb') as infile:
+    acc = pickle.load(infile)
+cw_acc = metrics.get_cluster_prediction_clusterwise(lstmpt, acc)
+print(cw_acc)
+# cluster prediction typewise

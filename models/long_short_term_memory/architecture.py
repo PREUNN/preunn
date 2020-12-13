@@ -91,11 +91,14 @@ class LSTMNetworkFRE(AbstractCELSTMNetwork):
 
 class LSTMNetworkSR(AbstractLSTMNetwork):
 
-    def __init__(self, num_classes: int = 16):
+    def __init__(self, num_classes: int = 16, num_hidden: int = 64,
+                 num_layers: int = 1):
         self.num_classes = num_classes
+        self.num_hidden = num_hidden
+        self.num_layers = num_layers
         super(LSTMNetworkSR, self).__init__(input_size=self.num_classes,
-                                            hidden_size=self.num_classes,
-                                            layers=1)
+                                            hidden_size=self.num_hidden,
+                                            layers=self.num_layers)
 
 
 class LSTMNetworkSG(AbstractCELSTMNetwork):
