@@ -2,8 +2,10 @@ from data.postprocessing.sequence_postprocessing.processing \
     import sequence_tensor_to_string_list
 from models.abstract_personaltrainer import AbstractPersonalTrainer
 from data.postprocessing.image_postprocessing.processing import *
-import re, random
 from scapy.all import wrpcap, Ether, IP, TCP
+import re
+import random
+
 
 
 class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
@@ -32,7 +34,8 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
             sequence_length = data.shape[1]
             h = self.model.init_hidden(batch_size=batch_size)
             h = tuple([each.data.to(self.device) for each in h])
-            target = target.to(self.device).long()
+            # target = target.to(self.device).long()
+            target = target.to(self.device).float()
             data = data.to(self.device).long()
             self.optimizer.zero_grad()
             loss = 0
@@ -116,7 +119,6 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
                     data = data[:, 1:]
                 data = torch.cat([data, top_i], dim=1)
 
-            self.model.train()
         return data, likelihood
 
     def get_new_http_statements(self):

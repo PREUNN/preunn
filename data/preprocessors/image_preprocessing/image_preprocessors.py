@@ -133,7 +133,8 @@ class AEImagePreprocessor(AbstractImagePreprocessor):
 class ClusteringPreprocessor(AbstractImagePreprocessor):
     """
     Preprocessor combining a feature extractor and SOM image backbones with a
-    normal image preprocessor base and sequencing them"""
+    normal image preprocessor base and sequencing them
+    """
 
     def __init__(self, source_dataset: AbstractDataset, data_length: int,
                  feature_extractor, som, sequence_length: int):
@@ -151,7 +152,7 @@ class ClusteringPreprocessor(AbstractImagePreprocessor):
             return self.__getitem__(random.randint(0, idx))
         data_list = []
 
-        # getting a sequence length of item and preparing them
+        # getting a sequence length of items and preparing them
         for i in range(self.sequence_length+1):
             data, _ = self.nip.__getitem__(idx + i)
             data = self.feature_extractor.create_output(data.cuda())

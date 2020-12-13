@@ -14,7 +14,7 @@ def load_model(model_save_path: str, architecture: abstract_architecture):
         model = torch.load(model_save_path)
         print("loaded ", model)
     else:
-        model = architecture()
+        model = architecture
         print("new model created")
     return model
 

@@ -41,7 +41,7 @@ test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True,
 """
 create or load model
 """
-model = load_model(MODEL_SAVE_PATH, AE)
+model = load_model(MODEL_SAVE_PATH, AE())
 
 """
 prepare teachers

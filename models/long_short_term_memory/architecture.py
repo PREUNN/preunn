@@ -14,12 +14,13 @@ class AbstractLSTMNetwork(AbstractArchitecture, ABC):
         self.lstm = nn.LSTM(self.hidden_size, self.hidden_size, self.layers)
         self.fc = nn.Linear(self.hidden_size, self.input_size)
         self.softmax = nn.Softmax(2)
+        self.out = nn.Linear(self.input_size, 1)
 
     def forward(self, x, hc):
         x = self.emb(x)
         x, hc = self.lstm(x.transpose(0, 1), hc)
         x = self.fc(x.transpose(0, 1))
-        x = self.softmax(x)
+        x = self.out(x).squeeze_()
         return x, hc
 
     def init_hidden(self, batch_size: int):
@@ -80,27 +81,27 @@ class AbstractCELSTMNetwork(AbstractArchitecture, ABC):
 
 
 class LSTMNetworkFRE(AbstractCELSTMNetwork):
-    num_classes = 1
 
-    def __init__(self):
+    def __init__(self, num_classes: int = 1):
+        self.num_classes = num_classes
         super(LSTMNetworkFRE, self).__init__(input_size=self.ascii_size
                                              + 2 * self.num_classes,
                                              hidden_size=50, layers=1)
 
 
 class LSTMNetworkSR(AbstractLSTMNetwork):
-    num_classes = 16
 
-    def __init__(self):
+    def __init__(self, num_classes: int = 16):
+        self.num_classes = num_classes
         super(LSTMNetworkSR, self).__init__(input_size=self.num_classes,
                                             hidden_size=self.num_classes,
                                             layers=1)
 
 
 class LSTMNetworkSG(AbstractCELSTMNetwork):
-    num_classes = 16
 
-    def __init__(self):
+    def __init__(self, num_classes: int = 16):
+        self.num_classes = num_classes
         super(LSTMNetworkSG, self).__init__(input_size=self.ascii_size
                                             + 2 * self.num_classes,
                                             hidden_size=100, layers=1)

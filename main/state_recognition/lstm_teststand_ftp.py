@@ -1,5 +1,4 @@
-from data.source_datasets.datasets import IEEEHTTPDataset1, IEEEHTTPDataset2, \
-    IEEEHTTPDataset3, NitrobaHTTPDataset
+from data.source_datasets.datasets import LBNL_FTP_PKTDataset1
 from data.preprocessors.image_preprocessing.image_preprocessors \
     import ClusteringPreprocessor
 from models.long_short_term_memory.architecture import LSTMNetworkSR
@@ -17,33 +16,28 @@ import os
 global variables for training purpose
 """
 LOG_INTERVAL = 2
-MODEL_SAVE_PATH = "LSTM_http.pt"
-BACKBONE1_SAVE_PATH = "AEimage_http.pt"
-BACKBONE2_SAVE_PATH = "SOMAE1_http.p"
-NUM_EPOCHS = 100
-BATCH_SIZE = 32
-SEQ_LENGTH = 6
+MODEL_SAVE_PATH = "LSTM_ftp.pt"
+BACKBONE1_SAVE_PATH = "AEimage_ftp.pt"
+BACKBONE2_SAVE_PATH = "SOMAE1_ftp.p"
+NUM_EPOCHS = 5
+BATCH_SIZE = 128
+SEQ_LENGTH = 24
 DATA_LENGTH = 1024
 
 """
 get data
 """
 # all the source datasets
-# source_dataset = AllHTTPDatasetsCombined()
-source_dataset = IEEEHTTPDataset1()
-source_dataset.merge(IEEEHTTPDataset2())
-source_dataset.merge(IEEEHTTPDataset3())
-source_dataset.merge(NitrobaHTTPDataset())
+source_dataset = LBNL_FTP_PKTDataset1()
 # no shuffling!
 
-train_dataset, test_dataset = source_dataset.split(split_value=0.75)
-train_dataset, validation_dataset = train_dataset.split(split_value=0.66)
+train_dataset, test_dataset = source_dataset.split(0.75)
+train_dataset, validation_dataset = train_dataset.split(0.66)
 
 
 """
 create or load model and backbone
 """
-model = load_model(MODEL_SAVE_PATH, LSTMNetworkSR)
 backbone = []
 if os.path.isfile(BACKBONE1_SAVE_PATH):
     backbone.append(torch.load(BACKBONE1_SAVE_PATH))
@@ -51,6 +45,9 @@ if os.path.isfile(BACKBONE1_SAVE_PATH):
 with open(BACKBONE2_SAVE_PATH, 'rb') as infile:
     backbone.append(pickle.load(infile))
     print("loaded som")
+model = load_model(MODEL_SAVE_PATH,
+                   LSTMNetworkSR(backbone[1].get_weights.shape[1]))
+
 train_preprocessor = ClusteringPreprocessor(train_dataset, DATA_LENGTH,
                                             backbone[0], backbone[1],
                                             SEQ_LENGTH)
@@ -71,8 +68,8 @@ test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=False,
 """
 prepare teachers
 """
-optimizer = torch.optim.Adam(model.parameters(), lr=0.0005, betas=(0.3, 0.9))
-criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.005, betas=(0.3, 0.9))
+criterion = nn.MSELoss()
 
 """
 run personal training
