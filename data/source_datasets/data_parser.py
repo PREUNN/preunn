@@ -66,8 +66,7 @@ class HTTPParser(AbstractProtocolParser):
             # check for validity of package
             check_validity_list = ["OPTIONS", "GET", "HEAD", "POST", "PUT",
                                    "DELETE", "TRACE", "CONNECT", "HTTP/1.1"]
-            if any(method in http_payload for method in check_validity_list) \
-                    and len(http_payload) > 20:
+            if any(method in http_payload for method in check_validity_list) and len(http_payload) > 20:
                 if any(ord(c) > 127 for c in http_payload):
                     print(http_payload)
                     continue

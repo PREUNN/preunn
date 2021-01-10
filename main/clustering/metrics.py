@@ -1,11 +1,8 @@
 import copy
 import numpy as np
-from torch.utils.data import DataLoader
-from models.self_organizing_map.personal_trainer import \
-    SelfOrganizingMapPersonalTrainer
+from models.self_organizing_map.personal_trainer import SelfOrganizingMapPersonalTrainer
 from data.source_datasets.protocol_types import Protocol
-from data.postprocessing.image_postprocessing.processing import \
-    image_tensor_to_string_list
+from data.postprocessing.image_postprocessing.processing import image_tensor_to_string_list
 
 
 def get_accuracy_matrix(trainer: SelfOrganizingMapPersonalTrainer):
@@ -24,12 +21,10 @@ def get_accuracy_matrix(trainer: SelfOrganizingMapPersonalTrainer):
     winner_list = []
     for _, (item, _) in enumerate(trainer.test_data):
         new_data = trainer.get_new_data(item)
-        winners = np.array([trainer.model.winner(x)[1] for x in
-                            new_data.detach()])
+        winners = np.array([trainer.model.winner(x)[1] for x in new_data.detach()])
 
         data_strings = image_tensor_to_string_list(item)
-        winner_list.extend([(classify_statement(item, protocol), win) for
-                            item, win in zip(data_strings, winners)])
+        winner_list.extend([(classify_statement(item, protocol), win) for item, win in zip(data_strings, winners)])
 
     accuracy_matrix = np.zeros([num_classes, num_clusters])
     for type, winner in winner_list:
@@ -78,8 +73,7 @@ def get_typewise_share(accuracy_matrix: np.ndarray) -> np.ndarray:
     return typewise_matrix
 
 
-def get_confident_cluster_metric(clusterwise_matrix: np.ndarray,
-                                 skip_zeros: bool = False) -> float:
+def get_confident_cluster_metric(clusterwise_matrix: np.ndarray, skip_zeros: bool = False) -> float:
     """
     This metric counts the number of confident clusters with more than 50%
     confidence.

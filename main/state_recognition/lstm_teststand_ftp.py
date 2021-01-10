@@ -46,25 +46,16 @@ if os.path.isfile(BACKBONE1_SAVE_PATH):
 with open(BACKBONE2_SAVE_PATH, 'rb') as infile:
     backbone.append(pickle.load(infile))
     print("loaded som")
-model = load_model(MODEL_SAVE_PATH,
-                   LSTMNetworkSR(backbone[1].get_weights().shape[1], 64, 1))
+model = load_model(MODEL_SAVE_PATH, LSTMNetworkSR(backbone[1].get_weights().shape[1], 64, 1))
 
-train_preprocessor = ClusteringPreprocessor(train_dataset, DATA_LENGTH,
-                                            backbone[0], backbone[1],
-                                            SEQ_LENGTH)
-validation_preprocessor = ClusteringPreprocessor(validation_dataset,
-                                                 DATA_LENGTH, backbone[0],
-                                                 backbone[1], SEQ_LENGTH)
-test_preprocessor = ClusteringPreprocessor(test_dataset, DATA_LENGTH,
-                                           backbone[0], backbone[1], SEQ_LENGTH)
+train_preprocessor = ClusteringPreprocessor(train_dataset, DATA_LENGTH, backbone[0], backbone[1], SEQ_LENGTH)
+validation_preprocessor = ClusteringPreprocessor(validation_dataset, DATA_LENGTH, backbone[0], backbone[1], SEQ_LENGTH)
+test_preprocessor = ClusteringPreprocessor(test_dataset, DATA_LENGTH, backbone[0], backbone[1], SEQ_LENGTH)
 
 # one dataloader each
-training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE,
-                                 shuffle=False, drop_last=True)
-validation_dataloader = DataLoader(validation_preprocessor, BATCH_SIZE,
-                                   shuffle=False, drop_last=True)
-test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE,
-                             shuffle=False, drop_last=True)
+training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=False, drop_last=True)
+validation_dataloader = DataLoader(validation_preprocessor, BATCH_SIZE, shuffle=False, drop_last=True)
+test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=False, drop_last=True)
 
 """
 prepare teachers
@@ -75,10 +66,8 @@ criterion = nn.MSELoss()
 """
 run personal training
 """
-lstmpt = LongShortTermMemoryPersonalTrainer(model, training_dataloader,
-                                            validation_dataloader, LOG_INTERVAL,
-                                            MODEL_SAVE_PATH, criterion,
-                                            optimizer)
+lstmpt = LongShortTermMemoryPersonalTrainer(model, training_dataloader, validation_dataloader, LOG_INTERVAL,
+                                            MODEL_SAVE_PATH, criterion, optimizer)
 lstmpt.run_training(num_epochs=NUM_EPOCHS)
 lstmpt.set_testset(dataloader=test_dataloader)
 lstmpt.finalize_test()

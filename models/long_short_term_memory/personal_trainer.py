@@ -6,10 +6,8 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
     """
     Training and testing class for LSTMs
     """
-    def __init__(self, model, training_data, test_data, log_interval,
-                 model_save_path, criterion, optimizer):
-        super().__init__(model, training_data, test_data, log_interval,
-                         model_save_path, criterion, optimizer)
+    def __init__(self, model, training_data, test_data, log_interval, model_save_path, criterion, optimizer):
+        super().__init__(model, training_data, test_data, log_interval, model_save_path, criterion, optimizer)
         return
 
     def train(self, epoch):
@@ -47,8 +45,7 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
             # logging interval
             if batch_id % self.log_interval == 0 and batch_id != 0:
                 loss_sum /= self.log_interval
-                self.print_training_loss(epoch=epoch, batch_id=batch_id,
-                                         batch_size=batch_size, loss=loss_sum)
+                self.print_training_loss(epoch=epoch, batch_id=batch_id, batch_size=batch_size, loss=loss_sum)
                 self.model.store_model(self.model_save_path)
             if batch_id % self.log_interval == 0:
                 loss_sum = 0
@@ -79,8 +76,7 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
             # logging interval
             if batch_id % self.log_interval == 0 and batch_id != 0:
                 loss_sum /= self.log_interval
-                self.print_test_loss(epoch=epoch, batch_id=batch_id,
-                                     batch_size=batch_size, loss=loss_sum)
+                self.print_test_loss(epoch=epoch, batch_id=batch_id, batch_size=batch_size, loss=loss_sum)
             if batch_id % self.log_interval == 0:
                 loss_sum = 0
 
@@ -127,6 +123,5 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
                 letter = torch.round(letter).long()
                 if data.shape[1] == length:
                     data = data[:, 1:]
-                data = torch.cat([data, letter[:, data.shape[1]-1].unsqueeze(
-                    dim=1)], dim=1)
+                data = torch.cat([data, letter[:, data.shape[1]-1].unsqueeze(dim=1)], dim=1)
         return data

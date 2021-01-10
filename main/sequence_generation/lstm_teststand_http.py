@@ -1,7 +1,5 @@
-from data.preprocessors.sequence_preprocessing.sequence_preprocessors \
-    import RandomSequencePreprocessor
-from models.long_short_term_memory.personal_trainer \
-    import LongShortTermMemoryPersonalTrainer
+from data.preprocessors.sequence_preprocessing.sequence_preprocessors import RandomSequencePreprocessor
+from models.long_short_term_memory.personal_trainer import LongShortTermMemoryPersonalTrainer
 from models.long_short_term_memory.architecture import LSTMNetworkSG
 from data.source_datasets.datasets import AllHTTPDatasetsCombined
 from torch.utils.data import DataLoader
@@ -48,25 +46,17 @@ with open(BACKBONE2_SAVE_PATH, 'rb') as infile:
     print("loaded som")
 
 # one preprocessor each
-training_preprocessor = RandomSequencePreprocessor(training_dataset,
-                                                   ALPHABET_SIZE,
-                                                   DATA_LENGTH, backbone[0],
-                                                   backbone[1], 16)
-validation_preprocessor = RandomSequencePreprocessor(validation_dataset,
-                                                     ALPHABET_SIZE,
-                                                     DATA_LENGTH, backbone[0],
-                                                     backbone[1], 16)
-test_preprocessor = RandomSequencePreprocessor(test_dataset, ALPHABET_SIZE,
-                                               DATA_LENGTH, backbone[0],
-                                               backbone[1], 16)
+training_preprocessor = RandomSequencePreprocessor(training_dataset, ALPHABET_SIZE, DATA_LENGTH,
+                                                   backbone[0], backbone[1], 16)
+validation_preprocessor = RandomSequencePreprocessor(validation_dataset, ALPHABET_SIZE, DATA_LENGTH,
+                                                     backbone[0], backbone[1], 16)
+test_preprocessor = RandomSequencePreprocessor(test_dataset, ALPHABET_SIZE, DATA_LENGTH,
+                                               backbone[0], backbone[1], 16)
 
 # one dataloader each
-training_dataloader = DataLoader(training_preprocessor, BATCH_SIZE,
-                                 shuffle=True, drop_last=True)
-validation_dataloader = DataLoader(validation_preprocessor, BATCH_SIZE,
-                                   shuffle=True, drop_last=True)
-test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True,
-                             drop_last=True)
+training_dataloader = DataLoader(training_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
+validation_dataloader = DataLoader(validation_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
+test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
 
 """
 prepare teachers
@@ -77,10 +67,8 @@ criterion = nn.NLLLoss()
 """
 run personal training
 """
-lstmpt = LongShortTermMemoryPersonalTrainer(model, training_dataloader,
-                                            validation_dataloader, LOG_INTERVAL,
-                                            MODEL_SAVE_PATH, criterion,
-                                            optimizer)
+lstmpt = LongShortTermMemoryPersonalTrainer(model, training_dataloader, validation_dataloader, LOG_INTERVAL,
+                                            MODEL_SAVE_PATH, criterion, optimizer)
 
 # lstmpt.run_training(num_epochs=NUM_EPOCHS)
 lstmpt.set_testset(dataloader=test_dataloader)

@@ -1,9 +1,7 @@
 from models.long_short_term_memory.architecture import LSTMNetworkFRE
-from models.long_short_term_memory.personal_trainer \
-    import LongShortTermMemoryPersonalTrainer
+from models.long_short_term_memory.personal_trainer import LongShortTermMemoryPersonalTrainer
 from data.source_datasets.datasets import LBNL_FTP_PKTDatasetCombined
-from data.preprocessors.sequence_preprocessing.sequence_preprocessors \
-    import RandomSequencePreprocessor
+from data.preprocessors.sequence_preprocessing.sequence_preprocessors import RandomSequencePreprocessor
 from torch.utils.data import DataLoader
 from main.helper import load_model
 import torch.nn as nn
@@ -25,8 +23,7 @@ get data
 """
 # all the source datasets
 source_dataset = LBNL_FTP_PKTDatasetCombined()
-source_preprocessor = RandomSequencePreprocessor(source_dataset, ALPHABET_SIZE,
-                                                 DATA_LENGTH)
+source_preprocessor = RandomSequencePreprocessor(source_dataset, ALPHABET_SIZE, DATA_LENGTH)
 source_preprocessor.shuffle_dataset()
 
 # one preprocessor each
@@ -34,12 +31,9 @@ train_preprocessor, test_preprocessor = source_preprocessor.split(0.75)
 train_preprocessor, validation_preprocessor = train_preprocessor.split(0.66)
 
 # one dataloader each
-training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=True,
-                                 drop_last=True)
-validation_dataloader = DataLoader(validation_preprocessor, BATCH_SIZE,
-                                   shuffle=True, drop_last=True)
-test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True,
-                             drop_last=True)
+training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
+validation_dataloader = DataLoader(validation_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
+test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
 
 """
 create or load model
@@ -55,10 +49,8 @@ criterion = nn.NLLLoss()
 """
 run personal training
 """
-lstmpt = LongShortTermMemoryPersonalTrainer(model, training_dataloader,
-                                            test_dataloader, LOG_INTERVAL,
-                                            MODEL_SAVE_PATH, criterion,
-                                            optimizer)
+lstmpt = LongShortTermMemoryPersonalTrainer(model, training_dataloader, test_dataloader, LOG_INTERVAL,
+                                            MODEL_SAVE_PATH, criterion, optimizer)
 
 # lstmpt.run_training(num_epochs=NUM_EPOCHS)
 # lstmpt.set_testset(dataloader=test_dataloader)

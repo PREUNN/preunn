@@ -1,11 +1,9 @@
 import pickle
 import main.clustering.metrics as metrics
 from data.source_datasets.datasets import LBNL_FTP_PKTDataset1
-from data.preprocessors.image_preprocessing.image_preprocessors import  \
-    NormalImagePreprocessor
+from data.preprocessors.image_preprocessing.image_preprocessors import NormalImagePreprocessor
 from models.auto_encoder.architecture import AE
-from models.self_organizing_map.personal_trainer import \
-    SelfOrganizingMapPersonalTrainer
+from models.self_organizing_map.personal_trainer import SelfOrganizingMapPersonalTrainer
 from torch.utils.data import DataLoader
 from minisom import MiniSom
 from main.helper import load_model
@@ -32,10 +30,8 @@ source_preprocessor.shuffle_dataset()
 train_preprocessor, test_preprocessor = source_preprocessor.split(0.975)
 
 # one dataloader each
-training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=True,
-                                 drop_last=True)
-test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True,
-                             drop_last=True)
+training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
+test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
 
 """
 create or load model
@@ -52,8 +48,7 @@ except:
 """
 run personal training
 """
-sompt = SelfOrganizingMapPersonalTrainer(model, training_dataloader,
-                                         test_dataloader, LOG_INTERVAL,
+sompt = SelfOrganizingMapPersonalTrainer(model, training_dataloader, test_dataloader, LOG_INTERVAL,
                                          MODEL_SAVE_PATH, backbone)
 sompt.run_training(num_epochs=NUM_EPOCHS)
 with open(MODEL_SAVE_PATH, 'wb') as outfile:
@@ -87,8 +82,7 @@ plt.ylabel("SOM Clusters")
 plt.show()
 
 conf = metrics.get_confident_cluster_metric(clusterwise_matrix)
-relevant_conf = metrics.get_confident_cluster_metric(clusterwise_matrix,
-                                                     skip_zeros=True)
+relevant_conf = metrics.get_confident_cluster_metric(clusterwise_matrix, skip_zeros=True)
 
 print("Confidence: " + str(conf))
 print("Relevant confidence: " + str(relevant_conf))

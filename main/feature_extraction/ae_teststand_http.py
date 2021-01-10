@@ -1,6 +1,5 @@
 from data.source_datasets.datasets import AllHTTPDatasetsCombined
-from data.preprocessors.image_preprocessing.image_preprocessors \
-    import NormalImagePreprocessor
+from data.preprocessors.image_preprocessing.image_preprocessors import NormalImagePreprocessor
 from models.auto_encoder.personal_trainer import AutoEncoderPersonalTrainer
 from models.auto_encoder.architecture import AE
 from torch.utils.data import DataLoader
@@ -31,12 +30,9 @@ train_preprocessor, test_preprocessor = source_preprocessor.split(0.75)
 train_preprocessor, validation_preprocessor = train_preprocessor.split(0.66)
 
 # one dataloader each
-training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=True,
-                                 drop_last=True)
-validation_dataloader = DataLoader(validation_preprocessor, BATCH_SIZE,
-                                   shuffle=True, drop_last=True)
-test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True,
-                             drop_last=True)
+training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
+validation_dataloader = DataLoader(validation_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
+test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
 
 """
 create or load model
@@ -52,8 +48,7 @@ criterion = nn.MSELoss()
 """
 run personal training
 """
-aept = AutoEncoderPersonalTrainer(model, training_dataloader,
-                                  validation_dataloader, LOG_INTERVAL,
+aept = AutoEncoderPersonalTrainer(model, training_dataloader, validation_dataloader, LOG_INTERVAL,
                                   MODEL_SAVE_PATH, criterion, optimizer)
 aept.run_training(num_epochs=NUM_EPOCHS)
 aept.set_testset(test_dataloader)

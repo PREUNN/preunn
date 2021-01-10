@@ -1,8 +1,6 @@
-from data.preprocessors.image_preprocessing.processing \
-    import string_to_tensor, padding_string, tensor_normalization, \
-    scramble_string
-from data.preprocessors.abstract_preprocessor \
-    import AbstractPreprocessor, AbstractDataset
+from data.preprocessors.image_preprocessing.processing import string_to_tensor, padding_string, \
+    tensor_normalization, scramble_string
+from data.preprocessors.abstract_preprocessor import AbstractPreprocessor, AbstractDataset
 from abc import ABC
 import random
 import torch
@@ -31,8 +29,7 @@ class AbstractImagePreprocessor(AbstractPreprocessor, ABC):
         # creating new preprocessors
         first_pp = self.__class__(self.source_dataset, self.data_length)
         second_pp = self.__class__(self.source_dataset, self.data_length)
-        first_pp.source_dataset, second_pp.source_dataset = \
-            self.source_dataset.split(split_value)
+        first_pp.source_dataset, second_pp.source_dataset = self.source_dataset.split(split_value)
         return first_pp, second_pp
 
 
@@ -55,11 +52,9 @@ class NormalImagePreprocessor(AbstractImagePreprocessor):
         # image interpretation from item and label
         item_tensor = string_to_tensor(item)
         label_tensor = string_to_tensor(label)
-        item_tensor = tensor_normalization(item_tensor,
-                                           self.source_dataset.data_min_value,
+        item_tensor = tensor_normalization(item_tensor, self.source_dataset.data_min_value,
                                            self.source_dataset.data_max_value)
-        label_tensor = tensor_normalization(label_tensor,
-                                            self.source_dataset.data_min_value,
+        label_tensor = tensor_normalization(label_tensor, self.source_dataset.data_min_value,
                                             self.source_dataset.data_max_value)
         return item_tensor, label_tensor
 
@@ -82,8 +77,7 @@ class ScrambledImagePreprocessor(AbstractImagePreprocessor):
         item = scramble_string(item, self.intervals[i])
         item = padding_string(item, self.data_length)
         item_tensor = string_to_tensor(item)
-        item_tensor = tensor_normalization(item_tensor,
-                                           self.source_dataset.data_min_value,
+        item_tensor = tensor_normalization(item_tensor, self.source_dataset.data_min_value,
                                            self.source_dataset.data_max_value)
 
         # creating class label
@@ -115,18 +109,15 @@ class AEImagePreprocessor(AbstractImagePreprocessor):
     preprocessor as base
     """
 
-    def __init__(self, source_dataset: AbstractDataset, data_length: int,
-                 autoencoder):
+    def __init__(self, source_dataset: AbstractDataset, data_length: int, autoencoder):
         super().__init__(source_dataset, data_length)
         self.autoencoder = autoencoder
-        self.nip = NormalImagePreprocessor(self.source_dataset,
-                                           self.data_length)
+        self.nip = NormalImagePreprocessor(self.source_dataset, self.data_length)
 
     def __getitem__(self, idx):
         # get item from base preprocessor and code it with the auto encoder
         item = self.nip.__getitem__(idx)
-        item = (self.autoencoder.create_output(item[0]),
-                self.autoencoder.create_output(item[1]))
+        item = (self.autoencoder.create_output(item[0]), self.autoencoder.create_output(item[1]))
         return item
 
 
@@ -136,14 +127,12 @@ class ClusteringPreprocessor(AbstractImagePreprocessor):
     normal image preprocessor base and sequencing them
     """
 
-    def __init__(self, source_dataset: AbstractDataset, data_length: int,
-                 feature_extractor, som, sequence_length: int):
+    def __init__(self, source_dataset: AbstractDataset, data_length: int, feature_extractor, som, sequence_length: int):
         super().__init__(source_dataset, data_length)
         self.feature_extractor = feature_extractor
         self.som = som
         self.sequence_length = sequence_length
-        self.nip = NormalImagePreprocessor(self.source_dataset,
-                                           self.data_length)
+        self.nip = NormalImagePreprocessor(self.source_dataset, self.data_length)
 
     def __getitem__(self, idx):
         # get first item for sequence

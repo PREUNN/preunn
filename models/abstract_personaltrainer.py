@@ -10,8 +10,7 @@ class AbstractPersonalTrainer(ABC):
     a class meant to be the abstract version of other tester classes
     """
 
-    def __init__(self, model: AbstractArchitecture, training_data: DataLoader,
-                 test_data: DataLoader, log_interval: int,
+    def __init__(self, model: AbstractArchitecture, training_data: DataLoader, test_data: DataLoader, log_interval: int,
                  model_save_path: str, criterion, optimizer):
         """
         standard init method
@@ -30,11 +29,9 @@ class AbstractPersonalTrainer(ABC):
         self.model_save_path = model_save_path
         self.criterion = criterion
         self.optimizer = optimizer
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else
-                                   "cpu")
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         if torch.cuda.device_count() > 1:
-            print(torch.cuda.device_count(), " GPUs are being used for "
-                                             "training")
+            print(torch.cuda.device_count(), " GPUs are being used for training")
             self.model = torch.nn.DataParallel(self.model)
         self.model = self.model.to(device=self.device)
         self.fig1 = None
@@ -90,21 +87,17 @@ class AbstractPersonalTrainer(ABC):
     def test(self, epoch: int):
         pass
 
-    def print_training_loss(self, epoch: int, batch_id: int, batch_size: int,
-                            loss: int):
+    def print_training_loss(self, epoch: int, batch_id: int, batch_size: int, loss: int):
         print("Training Epoch: {}, [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format
               (epoch, batch_id * batch_size, len(self.training_data.dataset),
-               100. * batch_id * batch_size / len(self.training_data.dataset),
-               loss))
+               100. * batch_id * batch_size / len(self.training_data.dataset), loss))
         self.training_loss_curve.append(loss)
         return
 
-    def print_test_loss(self, epoch: int, batch_id: int, batch_size: int,
-                        loss: int):
+    def print_test_loss(self, epoch: int, batch_id: int, batch_size: int, loss: int):
         print("Test Epoch: {}, [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format
               (epoch, batch_id * batch_size, len(self.test_data.dataset),
-               100. * batch_id * batch_size / len(self.test_data.dataset),
-               loss))
+               100. * batch_id * batch_size / len(self.test_data.dataset), loss))
         self.test_loss_curve.append(loss)
         return
 

@@ -1,9 +1,7 @@
-from models.convolutional_neural_network.personal_trainer \
-    import ConvolutionalNeuralNetworkPersonalTrainer
+from models.convolutional_neural_network.personal_trainer import ConvolutionalNeuralNetworkPersonalTrainer
 from models.convolutional_neural_network.architecture import CNN
 from data.source_datasets.datasets import LBNL_FTP_PKTDataset1
-from data.preprocessors.image_preprocessing.image_preprocessors \
-    import ScrambledImagePreprocessor
+from data.preprocessors.image_preprocessing.image_preprocessors import ScrambledImagePreprocessor
 from torch.utils.data import DataLoader
 from main.helper import load_model
 import torch.nn as nn
@@ -32,12 +30,9 @@ train_preprocessor, test_preprocessor = source_preprocessor.split(0.75)
 train_preprocessor, validation_preprocessor = train_preprocessor.split(0.66)
 
 # one dataloader each
-training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=True,
-                                 drop_last=True)
-validation_dataloader = DataLoader(validation_preprocessor, BATCH_SIZE,
-                                   shuffle=True, drop_last=True)
-test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True,
-                             drop_last=True)
+training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
+validation_dataloader = DataLoader(validation_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
+test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True, drop_last=True)
 
 """
 create or load model
@@ -53,10 +48,8 @@ criterion = nn.CrossEntropyLoss()
 """
 run personal training
 """
-cnnpt = ConvolutionalNeuralNetworkPersonalTrainer(model, training_dataloader,
-                                                  validation_dataloader,
-                                                  LOG_INTERVAL, MODEL_SAVE_PATH,
-                                                  criterion, optimizer)
+cnnpt = ConvolutionalNeuralNetworkPersonalTrainer(model, training_dataloader, validation_dataloader, LOG_INTERVAL,
+                                                  MODEL_SAVE_PATH, criterion, optimizer)
 cnnpt.run_training(num_epochs=NUM_EPOCHS)
 cnnpt.set_testset(test_dataloader)
 # cnnpt.finalize_test()

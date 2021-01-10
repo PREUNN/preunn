@@ -1,5 +1,4 @@
-from data.source_datasets.data_parser import AbstractProtocolParser, \
-    HTTPParser, FTPParser
+from data.source_datasets.data_parser import AbstractProtocolParser, HTTPParser, FTPParser
 from torch.utils.data import Dataset
 from abc import ABC
 import random

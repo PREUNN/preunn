@@ -5,8 +5,7 @@ class SelfOrganizingMapPersonalTrainer:
     """
     Training and testing class for auto encoder
     """
-    def __init__(self, model, training_data, test_data, log_interval,
-                 model_save_path, backbone):
+    def __init__(self, model, training_data, test_data, log_interval, model_save_path, backbone):
         self.model = model
         self.training_data = training_data
         self.test_data = test_data
@@ -36,8 +35,7 @@ class SelfOrganizingMapPersonalTrainer:
             arr = new_data.detach().numpy()
             self.model.train(arr, 100)
             if batch_id % self.log_interval == 0 and batch_id != 0:
-                print("Epoch ", epoch, ", Batch ", batch_id, " of ",
-                      len(self.training_data))
+                print("Epoch ", epoch, ", Batch ", batch_id, " of ", len(self.training_data))
 
     def test(self, epoch):
         pass

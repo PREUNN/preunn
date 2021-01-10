@@ -1,15 +1,12 @@
 import random
 import re
 from scapy.all import wrpcap, Ether, IP, TCP
-from data.postprocessing.sequence_postprocessing.processing import \
-    sequence_tensor_to_string_list
-from models.long_short_term_memory.personal_trainer import \
-    LongShortTermMemoryPersonalTrainer
+from data.postprocessing.sequence_postprocessing.processing import sequence_tensor_to_string_list
+from models.long_short_term_memory.personal_trainer import LongShortTermMemoryPersonalTrainer
 from main.clustering.metrics import get_label
 
 
-def get_new_http_statements(trainer: LongShortTermMemoryPersonalTrainer,
-                            num_classes: int):
+def get_new_http_statements(trainer: LongShortTermMemoryPersonalTrainer, num_classes: int):
     """
     use as fuzzer base
     :return:
@@ -24,9 +21,7 @@ def get_new_http_statements(trainer: LongShortTermMemoryPersonalTrainer,
 
     # iterating over test data for initialization vectors
     for _, (item, _) in enumerate(trainer.test_data):
-        sample_sequence, _ = trainer.sample(random_delimiter=3,
-                                            length=item.shape[1],
-                                            data=item.to(trainer.device))
+        sample_sequence, _ = trainer.sample(random_delimiter=3, length=item.shape[1], data=item.to(trainer.device))
 
         # evaluating each sample separately and create network packages
         for each in sample_sequence:
@@ -36,12 +31,9 @@ def get_new_http_statements(trainer: LongShortTermMemoryPersonalTrainer,
                 if each != "":
                     print(each)
                     statement_list.append(each)
-                    address = str(random.randint(1, 192)) + "." + \
-                              str(random.randint(1, 192)) + "." + \
-                              str(random.randint(1, 192)) + "." + \
-                              str(random.randint(1, 192))
-                    package = Ether() / IP(dst=address) \
-                              / TCP(dport=21, flags='S') / each
+                    address = str(random.randint(1, 192)) + "." + str(random.randint(1, 192)) + "." + \
+                              str(random.randint(1, 192)) + "." + str(random.randint(1, 192))
+                    package = Ether() / IP(dst=address) / TCP(dport=21, flags='S') / each
                     package_list.append(package)
             if len(package_list) > 1000:
                 package_list = package_list[:1000]
