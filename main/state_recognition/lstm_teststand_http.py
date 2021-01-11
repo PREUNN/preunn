@@ -16,8 +16,8 @@ global variables for training purpose
 """
 LOG_INTERVAL = 2
 MODEL_SAVE_PATH = "LSTM_http.pt"
-BACKBONE1_SAVE_PATH = "AEimage_http.pt"
-BACKBONE2_SAVE_PATH = "SOMAE1_http.p"
+BACKBONE1_SAVE_PATH = "AE_http.pt"
+BACKBONE2_SAVE_PATH = "SOM_AE_http.p"
 NUM_EPOCHS = 5
 BATCH_SIZE = 128
 SEQ_LENGTH = 4

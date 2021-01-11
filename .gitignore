@@ -5,3 +5,5 @@
 /data/source_datasets/FTP/*
 *.pyc
 *.xml
+*.pcap
+*.csv

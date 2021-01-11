@@ -1,8 +1,9 @@
 import pickle
+import numpy as np
 import main.clustering.metrics as metrics
 from data.source_datasets.datasets import LBNL_FTP_PKTDataset1
 from data.preprocessors.image_preprocessing.image_preprocessors import NormalImagePreprocessor
-from models.auto_encoder.architecture import AE
+from models.convolutional_neural_network.architecture import CNN
 from models.self_organizing_map.personal_trainer import SelfOrganizingMapPersonalTrainer
 from torch.utils.data import DataLoader
 from minisom import MiniSom
@@ -13,8 +14,10 @@ from matplotlib import pyplot as plt
 """
 global variables for training purpose
 """
+BACKBONE = "CNN"
+INPUT_LENGTH = 240 if BACKBONE == "CNN" else 128
 LOG_INTERVAL = 100
-MODEL_SAVE_PATH = "SOMAE1_ftp.p"
+MODEL_SAVE_PATH = "SOM_"+BACKBONE+"_ftp.p"
 NUM_EPOCHS = 5
 BATCH_SIZE = 128
 
@@ -36,14 +39,14 @@ test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True, drop_l
 """
 create or load model
 """
-backbone = load_model("AEimage_ftp.pt", AE())
+backbone = load_model(BACKBONE+"_ftp.pt", CNN())
 # backbone = None
 try:
     with open(MODEL_SAVE_PATH, 'rb') as infile:
         model = pickle.load(infile)
         print("loaded som")
 except:
-    model = MiniSom(1, 64, input_len=128, sigma=3, learning_rate=0.005)
+    model = MiniSom(1, 64, input_len=INPUT_LENGTH, sigma=3, learning_rate=0.005)
 
 """
 run personal training
@@ -84,12 +87,9 @@ plt.show()
 conf = metrics.get_confident_cluster_metric(clusterwise_matrix)
 relevant_conf = metrics.get_confident_cluster_metric(clusterwise_matrix, skip_zeros=True)
 
-print("Confidence: " + str(conf))
-print("Relevant confidence: " + str(relevant_conf))
-with open("accuracy_matrix_ftp.p", 'wb') as outfile:
-    pickle.dump(accuracy_matrix, outfile)
-with open("clusterwise_matrix_ftp.p", 'wb') as outfile:
-    pickle.dump(clusterwise_matrix, outfile)
-with open("typewise_matrix_ftp.p", 'wb') as outfile:
-    pickle.dump(typewise_matrix, outfile)
+print("Confidence: " + str(conf)) # CNN 20.3125%
+print("Relevant confidence: " + str(relevant_conf)) # CNN 20.3125%
+np.savetxt("accuracy_matrix_ftp.csv", accuracy_matrix, delimiter=",")
+np.savetxt("clusterwise_matrix_ftp.csv", clusterwise_matrix, delimiter=",")
+np.savetxt("typewise_matrix_ftp.csv", typewise_matrix, delimiter=",")
 print("success")

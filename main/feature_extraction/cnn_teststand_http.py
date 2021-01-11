@@ -10,11 +10,13 @@ import torch
 """
 global variables for training purpose
 """
-LOG_INTERVAL = 10
-MODEL_SAVE_PATH = "CNNfinal.pt"
+LOG_INTERVAL = 100
+MODEL_SAVE_PATH = "CNN_http.pt"
 NUM_EPOCHS = 10
 BATCH_SIZE = 128
 DATA_LENGTH = 1024
+LEARNING_RATE = 0.005
+
 
 """
 get data
@@ -41,7 +43,7 @@ model = load_model(MODEL_SAVE_PATH, CNN())
 """
 prepare teachers
 """
-optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
+optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 criterion = nn.CrossEntropyLoss()
 
 """

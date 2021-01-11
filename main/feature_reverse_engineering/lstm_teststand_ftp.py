@@ -55,4 +55,5 @@ lstmpt = LongShortTermMemoryPersonalTrainer(model, training_dataloader, test_dat
 # lstmpt.run_training(num_epochs=NUM_EPOCHS)
 # lstmpt.set_testset(dataloader=test_dataloader)
 # lstmpt.finalize_test()
-lstmpt.get_new_http_statements()
+lstmpt.get_new_statements(num_classes=1, filename="fre_test_ftp")
+

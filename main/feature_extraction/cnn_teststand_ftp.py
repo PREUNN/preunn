@@ -12,7 +12,7 @@ global variables for training purpose
 """
 LOG_INTERVAL = 100
 MODEL_SAVE_PATH = "CNN_ftp.pt"
-NUM_EPOCHS = 3
+NUM_EPOCHS = 10
 BATCH_SIZE = 128
 DATA_LENGTH = 1024
 LEARNING_RATE = 0.005
@@ -52,5 +52,5 @@ cnnpt = ConvolutionalNeuralNetworkPersonalTrainer(model, training_dataloader, va
                                                   MODEL_SAVE_PATH, criterion, optimizer)
 cnnpt.run_training(num_epochs=NUM_EPOCHS)
 cnnpt.set_testset(test_dataloader)
-# cnnpt.finalize_test()
+cnnpt.finalize_test()
 cnnpt.visualize(num_samples=10, display=True)

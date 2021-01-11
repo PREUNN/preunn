@@ -1,4 +1,5 @@
 import pickle
+import numpy as np
 import main.clustering.metrics as metrics
 from data.source_datasets.datasets import AllHTTPDatasetsCombined
 from data.preprocessors.image_preprocessing.image_preprocessors import NormalImagePreprocessor
@@ -13,8 +14,10 @@ from matplotlib import pyplot as plt
 """
 global variables for training purpose
 """
+BACKBONE = "CNN"
+INPUT_LENGTH = 240 if BACKBONE == "CNN" else 128
 LOG_INTERVAL = 100
-MODEL_SAVE_PATH = "SOMAE1_http.p"
+MODEL_SAVE_PATH = "SOM_"+BACKBONE+"_http.p"
 NUM_EPOCHS = 5
 BATCH_SIZE = 128
 
@@ -36,21 +39,21 @@ test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True, drop_l
 """
 create or load model
 """
-backbone = load_model("AEimage_http.pt", AE())
+backbone = load_model(BACKBONE+"_http.pt", AE())
 # backbone = None
 try:
     with open(MODEL_SAVE_PATH, 'rb') as infile:
         model = pickle.load(infile)
         print("loaded som")
 except:
-    model = MiniSom(1, 16, input_len=128, sigma=2, learning_rate=0.005)
+    model = MiniSom(1, 16, input_len=INPUT_LENGTH, sigma=2, learning_rate=0.005)
 
 """
 run personal training
 """
 sompt = SelfOrganizingMapPersonalTrainer(model, training_dataloader, test_dataloader, LOG_INTERVAL,
                                          MODEL_SAVE_PATH, backbone)
-# sompt.run_training(num_epochs=NUM_EPOCHS)
+sompt.run_training(num_epochs=NUM_EPOCHS)
 with open(MODEL_SAVE_PATH, 'wb') as outfile:
     pickle.dump(model, outfile)
 
@@ -84,12 +87,9 @@ plt.show()
 conf = metrics.get_confident_cluster_metric(clusterwise_matrix)
 relevant_conf = metrics.get_confident_cluster_metric(clusterwise_matrix, skip_zeros=True)
 
-print("Confidence: " + str(conf))
-print("Relevant confidence: " + str(relevant_conf))
-with open("accuracy_matrix_http.p", 'wb') as outfile:
-    pickle.dump(accuracy_matrix, outfile)
-with open("clusterwise_matrix_http.p", 'wb') as outfile:
-    pickle.dump(clusterwise_matrix, outfile)
-with open("typewise_matrix_http.p", 'wb') as outfile:
-    pickle.dump(typewise_matrix, outfile)
+print("Confidence: " + str(conf)) # CNN 75%
+print("Relevant confidence: " + str(relevant_conf)) # CNN 75%
+np.savetxt("accuracy_matrix_http.csv", accuracy_matrix, delimiter=",")
+np.savetxt("clusterwise_matrix_http.csv", clusterwise_matrix, delimiter=",")
+np.savetxt("typewise_matrix_http.csv", typewise_matrix, delimiter=",")
 print("success")

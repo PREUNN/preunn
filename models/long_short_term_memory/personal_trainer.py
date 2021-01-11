@@ -1,5 +1,9 @@
 import torch
+import random
+import re
 from models.abstract_personaltrainer import AbstractPersonalTrainer
+from scapy.all import wrpcap, Ether, IP, TCP
+from data.postprocessing.sequence_postprocessing.processing import sequence_tensor_to_string_list
 
 
 class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
@@ -83,7 +87,7 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
         self.model.train()
         return
 
-    def sample(self, random_delimiter: int, length: int, data):
+    def sample_statement(self, random_delimiter: int, length: int, data):
         """
         Subroutine to create a sample from the lstm
         :param random_delimiter: stepsize for when to sample by probability
@@ -125,3 +129,42 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
                     data = data[:, 1:]
                 data = torch.cat([data, letter[:, data.shape[1]-1].unsqueeze(dim=1)], dim=1)
         return data
+
+    def get_new_statements(self, num_classes: int, filename: str):
+        """
+        This method will create a new pcap file with 1000 newly generated
+        samples of the same protocol type as the testset.
+        :param num_classes: number of classes used for the protocol clustering.
+        :param filename: name of the file to be saved.
+        :return: None
+        """
+        splitter = ''
+        for x in range(num_classes):
+            splitter += 'EOP°' + str(x) + '\n\n|'
+            splitter += 'SOP°' + str(x) + '\n|'
+        splitter = splitter[:-1]
+        statement_list = []
+        package_list = []
+
+        # iterating over test data for initialization vectors
+        for _, (item, _) in enumerate(self.test_data):
+            sample_sequence, _ = self.sample_statement(random_delimiter=3, length=item.shape[1], data=item.to(self.device))
+
+            # evaluating each sample separately and create network packages
+            for each in sample_sequence:
+                each = sequence_tensor_to_string_list(each.unsqueeze(0))[0]
+                temp_list = re.split(splitter, each)
+                for each in temp_list[1:-1]:
+                    if each != "":
+                        print(each)
+                        statement_list.append(each)
+                        address = str(random.randint(1, 192)) + "." + str(random.randint(1, 192)) + "." + \
+                                  str(random.randint(1, 192)) + "." + str(random.randint(1, 192))
+                        package = Ether() / IP(dst=address) / TCP(dport=21, flags='S') / each
+                        package_list.append(package)
+                if len(package_list) > 1000:
+                    package_list = package_list[:1000]
+                    break
+            wrpcap(filename + ".pcap", package_list)
+            break
+        return
