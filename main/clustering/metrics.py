@@ -4,37 +4,6 @@ from models.self_organizing_map.personal_trainer import SelfOrganizingMapPersona
 from data.source_datasets.protocol_types import Protocol
 from data.postprocessing.image_postprocessing.processing import image_tensor_to_string_list
 
-types = {Protocol.HTTP: {0: ["##################"],
-                         1: ["GET"],
-                         2: ["HTTP/1.1 2"],
-                         3: ["HTTP/1.1 3"],
-                         4: ["HTTP/1.1 4"],
-                         5: ["POST"],
-                         6: ["HEAD"],
-                         7: ["DELETE"],
-                         8: ["OPTIONS"],
-                         9: ["PUT"],
-                         10: ["TRACE"],
-                         11: ["CONNECT"]},
-         Protocol.FTP: {0: ["##################"],
-                        1: ["ACCT", "ADAT", "AUTH", "CONF", "ENC", "MIC",
-                            "PASS", "PBSZ", "PROT", "QUIT", "USER"],
-                        2: ["230", "331", "332", "530", "532"],
-                        3: ["PASV", "EPSV", "LPSV"],
-                        4: ["227", "228", "229"],
-                        5: ["ABOR", "EPRT", "LPRT", "MODE", "PORT", "REST",
-                            "RETR", "TYPE", "XSEM", "XSEN"],
-                        6: ["125", "150", "221", "225", "226", "421", "425",
-                            "426"],
-                        7: ["ALLO", "APPE", "CDUP", "CWD", "DELE", "LIST",
-                            "MKD", "MDTM", "PWD", "RMD", "RNFR", "RNTO",
-                            "STOR", "STRU", "SYST", "XCUP", "XMKD", "XPWD",
-                            "XRMD"],
-                        8: ["212", "213", "215", "250", "257", "350", "532"],
-                        9: ["120", "200", "202", "211", "214", "220", "450",
-                            "451", "452", "500", "501", "502", "503", "504",
-                            "550", "551", "552", "553", "554", "555"]}}
-
 
 def get_accuracy_matrix(trainer: SelfOrganizingMapPersonalTrainer):
     """
@@ -47,7 +16,7 @@ def get_accuracy_matrix(trainer: SelfOrganizingMapPersonalTrainer):
     # constants
     protocol = trainer.test_data.dataset.source_dataset.protocol_type
     num_classes = trainer.model.get_weights().shape[1]
-    num_clusters = max(len(types[Protocol.HTTP]), len(types[Protocol.FTP]))
+    num_clusters = max(len(Protocol.HTTP.value.keys()), len(Protocol.FTP.value.keys()))
 
     winner_list = []
     for _, (item, _) in enumerate(trainer.test_data):
@@ -152,7 +121,7 @@ def classify_statement(statement: str, protocol: Protocol):
     """
 
     # decide on the type list used
-    type_list = types[protocol]
+    type_list = protocol.value
 
     # check if any keyword is in the statement, return type accordingly
     # miscellaneous is default

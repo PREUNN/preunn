@@ -1,3 +1,4 @@
 TODO redo SR tests / maybe change architectures
-TODO run experiments on equally sampled classes/create as datasets
+TODO run experiments on equally sampled classes
+TODO test clustering metrics again (by light AE experiments?)
 TODO rerun clustering AE

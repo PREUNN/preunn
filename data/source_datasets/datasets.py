@@ -1,4 +1,5 @@
 from data.source_datasets.data_parser import AbstractProtocolParser, HTTPParser, FTPParser
+from main.clustering.metrics import classify_statement
 from torch.utils.data import Dataset
 from abc import ABC
 import random
@@ -37,6 +38,28 @@ class AbstractDataset(Dataset, ABC):
             torch.save(ret, self.dir_path + self.filepath)
             print("reloaded and saved dataset " + self.filepath)
         return ret
+
+    def balance_dataset(self, class_limit: int = 1000):
+        """
+        This method will filter the dataset by types to balance them given a limit
+        :param class_limit: instance limit per class
+        :return: None
+        """
+        balanced_samples = []
+        for _ in range(len(self.protocol_type.value.keys())):
+            balanced_samples.append([])
+        for class_list in balanced_samples:
+            i = 0
+            while len(class_list) < class_limit:
+                try:
+                    item = self.__getitem__(i)
+                except IndexError:
+                    break
+                index = classify_statement(item, self.protocol_type)
+                if len(balanced_samples[index]) < class_limit:
+                    balanced_samples[index].append(item)
+                i += 1
+        self.data = [item for sublist in balanced_samples for item in sublist]
 
     def __len__(self):
         self.length = len(self.data)
@@ -241,28 +264,6 @@ class LBNL_FTP_PKTDatasetCombined(AbstractFTPDataset):
             self.merge(dataset)
 
 
-from matplotlib import pyplot as plt
-
 if __name__ == "__main__":
-    ftp = LBNL_FTP_PKTDatasetCombined()
-    count = 0
-    for x in ftp:
-        try:
-            int(x[:2])
-        except:
-            count += 1
-    print(count)
-    # data = AllHTTPDatasetsCombined()
-    # check_validity_list = ["OPTIONS", "GET", "HEAD", "POST", "PUT",
-    #                        "DELETE", "TRACE", "CONNECT", "HTTP/1.1"]
-    # dic = {i: 0 for i in check_validity_list}
-    # for each in data:
-    #     for key in check_validity_list:
-    #         if key in each:
-    #             dic[key] += 1
-    # print(dic)
-    # plt.bar(dic.keys(), dic.values())
-    # plt.xlabel("HTTP Type")
-    # plt.ylabel("Number of instances")
-    # plt.show()
-    # print("")
+    ftp = CICDDoS2019HTTPDataset()
+    ftp.balance_dataset(class_limit=200)
