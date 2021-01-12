@@ -8,36 +8,37 @@ class CNN(AbstractArchitecture):
     """
     def __init__(self):
         super(CNN, self).__init__()
+        self.dropout = 0.5
 
         self.conv1 = nn.Sequential(
             nn.Conv1d(1, 128, kernel_size=4, stride=2),
             nn.BatchNorm1d(128),
             nn.Softplus(),
-            nn.Dropout(0.2),
+            nn.Dropout(self.dropout),
         )
         self.conv2 = nn.Sequential(
             nn.Conv1d(128, 64, kernel_size=4, stride=2),
             nn.BatchNorm1d(64),
             nn.Softplus(),
-            nn.Dropout(0.2),
+            nn.Dropout(self.dropout),
         )
         self.conv3 = nn.Sequential(
             nn.Conv1d(64, 32, kernel_size=4, stride=2),
             nn.BatchNorm1d(32),
             nn.Softplus(),
-            nn.Dropout(0.2),
+            nn.Dropout(self.dropout),
         )
         self.conv4 = nn.Sequential(
             nn.Conv1d(32, 16, kernel_size=4, stride=2),
             nn.BatchNorm1d(16),
             nn.Softplus(),
-            nn.Dropout(0.2),
+            nn.Dropout(self.dropout),
         )
         self.conv5 = nn.Sequential(
             nn.Conv1d(16, 8, kernel_size=4, stride=2),
             nn.BatchNorm1d(8),
             nn.Softplus(),
-            nn.Dropout(0.2),
+            nn.Dropout(self.dropout),
         )
         self.out = nn.Sequential(
             nn.Linear(240, 40),

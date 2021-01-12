@@ -15,9 +15,9 @@ class ConvolutionalNeuralNetworkPersonalTrainer(AbstractPersonalTrainer):
         super().__init__(model, training_data, test_data, log_interval, model_save_path, criterion, optimizer)
         self.fig2, (self.ax3, self.ax4) = plt.subplots(2, sharey=True)
         self.ax3.set(xlabel="Iterations", ylabel="%")
-        self.ax3.set_title("Training Accuracy")
+        self.ax3.set_title("Training Accuracy " + str(self.protocol))
         self.ax4.set(xlabel="Iterations", ylabel="%")
-        self.ax4.set_title("Validation Accuracy")
+        self.ax4.set_title("Validation Accuracy " + str(self.protocol))
         self.training_accuracies = []
         self.test_accuracies = []
         return

@@ -39,7 +39,7 @@ class AbstractDataset(Dataset, ABC):
             print("reloaded and saved dataset " + self.filepath)
         return ret
 
-    def balance_dataset(self, class_limit: int = 1000):
+    def balance_dataset(self, class_limit: int = 5000):
         """
         This method will filter the dataset by types to balance them given a limit
         :param class_limit: instance limit per class

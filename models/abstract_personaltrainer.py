@@ -37,15 +37,16 @@ class AbstractPersonalTrainer(ABC):
         self.fig1 = None
         self.training_loss_curve = []
         self.test_loss_curve = []
+        self.protocol = self.training_data.dataset.source_dataset.protocol_type
         self.initialize_imaging()
         return
 
     def initialize_imaging(self):
         self.fig1, (self.ax1, self.ax2) = plt.subplots(2, sharey=True)
         self.ax1.set(xlabel='Iterations', ylabel='Loss')
-        self.ax1.set_title("Training Loss")
+        self.ax1.set_title("Training Loss " + str(self.protocol))
         self.ax2.set(xlabel='Iterations', ylabel='Loss')
-        self.ax2.set_title("Validation Loss")
+        self.ax2.set_title("Validation Loss " + str(self.protocol))
         self.training_loss_curve = []
         self.test_loss_curve = []
         return
@@ -118,7 +119,7 @@ class AbstractPersonalTrainer(ABC):
         self.initialize_imaging()
         self.test(1)
         maximum = self.get_loss_maximum()
-        self.ax2.set_title("Test Loss")
+        self.ax2.set_title("Test Loss " + str(self.protocol))
         self.ax2.plot(self.test_loss_curve, "tab:orange")
         self.ax2.set_ylim(bottom=0 - maximum / 20, top=maximum*1.05)
         self.fig1.delaxes(self.ax1)

@@ -10,9 +10,9 @@ import torch
 """
 global variables for training purpose
 """
-LOG_INTERVAL = 100
-MODEL_SAVE_PATH = "CNN_http.pt"
-NUM_EPOCHS = 10
+LOG_INTERVAL = 25
+MODEL_SAVE_PATH = "CNN_balanced_http.pt"
+NUM_EPOCHS = 25
 BATCH_SIZE = 128
 DATA_LENGTH = 1024
 LEARNING_RATE = 0.005
@@ -23,8 +23,9 @@ get data
 """
 # all the source datasets
 source_dataset = AllHTTPDatasetsCombined()
+source_dataset.shuffle_dataset()
+source_dataset.balance_dataset(class_limit=5000)
 source_preprocessor = ScrambledImagePreprocessor(source_dataset, DATA_LENGTH)
-source_preprocessor.shuffle_dataset()
 
 # one preprocessor each
 train_preprocessor, test_preprocessor = source_preprocessor.split(0.75)
