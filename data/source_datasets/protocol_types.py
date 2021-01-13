@@ -6,17 +6,17 @@ class Protocol(enum.Enum):
     Types of protocols
     """
     HTTP = {0: ["##################"],
-            1: ["GET"],
+            1: ["GET "],
             2: ["HTTP/1.1 2"],
             3: ["HTTP/1.1 3"],
             4: ["HTTP/1.1 4"],
-            5: ["POST"],
-            6: ["HEAD"],
-            7: ["DELETE"],
-            8: ["OPTIONS"],
-            9: ["PUT"],
-            10: ["TRACE"],
-            11: ["CONNECT"]}
+            5: ["POST "],
+            6: ["HEAD "],
+            7: ["DELETE "],
+            8: ["OPTIONS "],
+            9: ["PUT "],
+            10: ["TRACE "],
+            11: ["CONNECT "]}
     FTP = {0: ["##################"],
            1: ["ACCT", "ADAT", "AUTH", "CONF", "ENC", "MIC",
                "PASS", "PBSZ", "PROT", "QUIT", "USER"],

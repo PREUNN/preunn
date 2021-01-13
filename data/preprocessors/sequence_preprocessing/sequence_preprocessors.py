@@ -136,7 +136,7 @@ class RandomSequencePreprocessor(AbstractSequencePreprocessor):
         while len(item) < self.SEQUENCE_LENGTH_FACTOR * self.data_length:
             try:
                 data = self.source_dataset.__getitem__(start_idx)
-                aux_data = self.num_clusters - 1
+                aux_data = 0
 
                 # backbone preprocessing if available
                 if self.feature_extractor is not None and self.som is not None:
@@ -145,8 +145,9 @@ class RandomSequencePreprocessor(AbstractSequencePreprocessor):
                     aux_data = self.som.winner(aux_data.cpu().squeeze(0).detach())[1]
 
                 # setting special symbols
-                item += chr(self.alphabet_size - aux_data - 1) + data + chr(self.alphabet_size - self.num_clusters -
-                                                                            aux_data - 1)
+                item += chr(self.alphabet_size - 2 * self.num_clusters + aux_data) + data \
+                        + chr(self.alphabet_size - self.num_clusters + aux_data)
+                assert(all([ord(x) < self.alphabet_size for x in item]))
             except:
                 return self.__getitem__(random.randint(0, idx))
             start_idx += 1

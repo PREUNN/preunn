@@ -1,6 +1,7 @@
 import torch
 import random
 import re
+from data.source_datasets.protocol_types import Protocol
 from models.abstract_personaltrainer import AbstractPersonalTrainer
 from scapy.all import wrpcap, Ether, IP, TCP
 from data.postprocessing.sequence_postprocessing.processing import sequence_tensor_to_string_list
@@ -30,8 +31,9 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
             sequence_length = data.shape[1]
             h = self.model.init_hidden(batch_size=batch_size)
             h = tuple([each.data.to(self.device) for each in h])
-            # target = target.to(self.device).long()
-            target = target.to(self.device).float()
+            # change between the following 2 lines from fre/sg and sr experiments
+            target = target.to(self.device).long()
+            # target = target.to(self.device).float()
             data = data.to(self.device).long()
             self.optimizer.zero_grad()
             loss = 0
@@ -138,6 +140,10 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
         :param filename: name of the file to be saved.
         :return: None
         """
+        if self.protocol == Protocol.HTTP:
+            port = 80
+        if self.protocol == Protocol.FTP:
+            port = 21
         splitter = ''
         for x in range(num_classes):
             splitter += 'EOP°' + str(x) + '\n\n|'
@@ -152,7 +158,7 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
 
             # evaluating each sample separately and create network packages
             for each in sample_sequence:
-                each = sequence_tensor_to_string_list(each.unsqueeze(0))[0]
+                each = sequence_tensor_to_string_list(each.unsqueeze(0), num_classes=1)[0]
                 temp_list = re.split(splitter, each)
                 for each in temp_list[1:-1]:
                     if each != "":
@@ -160,7 +166,7 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
                         statement_list.append(each)
                         address = str(random.randint(1, 192)) + "." + str(random.randint(1, 192)) + "." + \
                                   str(random.randint(1, 192)) + "." + str(random.randint(1, 192))
-                        package = Ether() / IP(dst=address) / TCP(dport=21, flags='S') / each
+                        package = Ether() / IP(dst=address) / TCP(dport=port, flags='S') / each
                         package_list.append(package)
                 if len(package_list) > 1000:
                     package_list = package_list[:1000]

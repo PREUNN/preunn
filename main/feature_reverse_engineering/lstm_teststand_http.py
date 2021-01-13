@@ -11,8 +11,8 @@ import torch
 global variables for training purpose
 """
 LOG_INTERVAL = 2
-MODEL_SAVE_PATH = "LSTM_http.pt"
-NUM_EPOCHS = 1
+MODEL_SAVE_PATH = "LSTM_balanced_http.pt"
+NUM_EPOCHS = 4
 DATA_LENGTH = 1024
 BATCH_SIZE = 128
 LEARNING_RATE = 0.005
@@ -23,8 +23,9 @@ get data
 """
 # all the source datasets
 source_dataset = AllHTTPDatasetsCombined()
+source_dataset.shuffle_dataset()
+source_dataset.balance_dataset(class_limit=5000)
 source_preprocessor = RandomSequencePreprocessor(source_dataset, ALPHABET_SIZE, DATA_LENGTH)
-source_preprocessor.shuffle_dataset()
 
 # one preprocessor each
 train_preprocessor, test_preprocessor = source_preprocessor.split(0.75)
@@ -52,7 +53,7 @@ run personal training
 lstmpt = LongShortTermMemoryPersonalTrainer(model, training_dataloader, test_dataloader, LOG_INTERVAL,
                                             MODEL_SAVE_PATH, criterion, optimizer)
 
-# lstmpt.run_training(num_epochs=NUM_EPOCHS)
+lstmpt.run_training(num_epochs=NUM_EPOCHS)
 lstmpt.set_testset(dataloader=test_dataloader)
-# lstmpt.finalize_test()
+lstmpt.finalize_test()
 lstmpt.get_new_statements(num_classes=1, filename="fre_test_http")

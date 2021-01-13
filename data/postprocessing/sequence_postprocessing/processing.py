@@ -4,13 +4,12 @@ import torch
 ASCII_SIZE = 128
 
 
-def letter_tensor_to_char(tensor, coded=False, num_clusters=16):
+def letter_tensor_to_char(tensor, coded=False, num_clusters=1):
     """
     Turns a single one-hot-encoded tensor (for a char) back into a char. Returns
     special strings at EOP/SOP. Assuming 128 character ASCII table.
     :param tensor: One hot encoded tensor
-    :param coded: If the tensor is using indexed (=False) or one hot encoding
-    (=True)
+    :param coded: If the tensor is using indexed (=False) or one hot encoding (=True)
     :param num_clusters: Number of clusters to be assumed
     :return: Char of the tensor or None if outside of ascii
     """
@@ -22,12 +21,12 @@ def letter_tensor_to_char(tensor, coded=False, num_clusters=16):
         _, i = tensor.data.topk(1)
     else:
         i, _ = tensor.data.topk(1)
-    if ASCII_SIZE <= i < ASCII_SIZE+num_clusters:
-        x = str(num_clusters - (i.item() - ASCII_SIZE))
-        return "EOP°" + x + "\n\n"
-    if ASCII_SIZE+num_clusters <= i < ASCII_SIZE+2*num_clusters:
-        x = str(num_clusters - (i.item() - (ASCII_SIZE+num_clusters)))
+    if ASCII_SIZE <= i < ASCII_SIZE + num_clusters:
+        x = str(i.item() - ASCII_SIZE)
         return "SOP°" + x + "\n"
+    if ASCII_SIZE + num_clusters <= i < ASCII_SIZE + 2 * num_clusters:
+        x = str(i.item() - (ASCII_SIZE + num_clusters))
+        return "EOP°" + x + "\n\n"
     else:
         return chr(i)
 
@@ -68,12 +67,12 @@ def print_sample(sample, coded=False):
     print(string)
 
 
-def sequence_tensor_to_string_list(tensor, coded=False):
+def sequence_tensor_to_string_list(tensor, num_classes: int = 1, coded=False):
     """
     Turns a sequence tensor (one-hot encoded) into a list of strings.
     :param tensor: Tensor of shape "batchsize * sequence length * coding"
-    :param coded: If the tensor is using indexed (=False) or one hot encoding
-    (=True)
+    :param coded: If the tensor is using indexed (=False) or one hot encoding (=True)
+    :param num_classes: Number of classes.
     :return: List of strings from the tensor
     """
     # parameter checks
@@ -89,7 +88,7 @@ def sequence_tensor_to_string_list(tensor, coded=False):
 
         # iterating over letters in lines
         for letter in lines:
-            string += letter_tensor_to_char(letter, coded)
+            string += letter_tensor_to_char(letter, coded, num_clusters=num_classes)
 
         # output
         string_list.append(string)
