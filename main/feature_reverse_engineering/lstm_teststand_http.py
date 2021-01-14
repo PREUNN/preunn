@@ -12,7 +12,7 @@ global variables for training purpose
 """
 LOG_INTERVAL = 2
 MODEL_SAVE_PATH = "LSTM_balanced_http.pt"
-NUM_EPOCHS = 4
+NUM_EPOCHS = 5
 DATA_LENGTH = 1024
 BATCH_SIZE = 128
 LEARNING_RATE = 0.005
@@ -57,3 +57,4 @@ lstmpt.run_training(num_epochs=NUM_EPOCHS)
 lstmpt.set_testset(dataloader=test_dataloader)
 lstmpt.finalize_test()
 lstmpt.get_new_statements(num_classes=1, filename="fre_test_http")
+# 14.1% HTTP

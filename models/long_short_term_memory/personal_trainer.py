@@ -153,24 +153,25 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
         package_list = []
 
         # iterating over test data for initialization vectors
-        for _, (item, _) in enumerate(self.test_data):
-            sample_sequence, _ = self.sample_statement(random_delimiter=3, length=item.shape[1], data=item.to(self.device))
+        while len(package_list) < 1000:
+            for _, (item, _) in enumerate(self.test_data):
+                sample_sequence, _ = self.sample_statement(random_delimiter=3, length=item.shape[1], data=item.to(self.device))
 
-            # evaluating each sample separately and create network packages
-            for each in sample_sequence:
-                each = sequence_tensor_to_string_list(each.unsqueeze(0), num_classes=1)[0]
-                temp_list = re.split(splitter, each)
-                for each in temp_list[1:-1]:
-                    if each != "":
-                        print(each)
-                        statement_list.append(each)
-                        address = str(random.randint(1, 192)) + "." + str(random.randint(1, 192)) + "." + \
-                                  str(random.randint(1, 192)) + "." + str(random.randint(1, 192))
-                        package = Ether() / IP(dst=address) / TCP(dport=port, flags='S') / each
-                        package_list.append(package)
-                if len(package_list) > 1000:
-                    package_list = package_list[:1000]
-                    break
-            wrpcap(filename + ".pcap", package_list)
-            break
+                # evaluating each sample separately and create network packages
+                for each in sample_sequence:
+                    each = sequence_tensor_to_string_list(each.unsqueeze(0), num_classes=1)[0]
+                    temp_list = re.split(splitter, each)
+                    for each in temp_list[1:-1]:
+                        if each != "":
+                            print(each)
+                            statement_list.append(each)
+                            address = str(random.randint(1, 192)) + "." + str(random.randint(1, 192)) + "." + \
+                                      str(random.randint(1, 192)) + "." + str(random.randint(1, 192))
+                            package = Ether() / IP(dst=address) / TCP(dport=port, flags='S') / each
+                            package_list.append(package)
+                    if len(package_list) > 1000:
+                        package_list = package_list[:1000]
+                        wrpcap(filename + ".pcap", package_list)
+                        return
+        wrpcap(filename + ".pcap", package_list)
         return

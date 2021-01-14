@@ -60,6 +60,7 @@ class AbstractDataset(Dataset, ABC):
                     balanced_samples[index].append(item)
                 i += 1
         self.data = [item for sublist in balanced_samples for item in sublist]
+        self.shuffle_dataset()
 
     def __len__(self):
         self.length = len(self.data)

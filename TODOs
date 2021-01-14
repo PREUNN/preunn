@@ -1,5 +1,5 @@
 TODO redo SR tests / maybe change architectures
-TODO run experiments on equally sampled classes FRE!
+TODO run experiments on equally sampled classes (fre done)
 TODO test clustering metrics again (by balanced AE experiments?)
 TODO rerun clustering AE
 TODO what does the hamming distance mean in ftp? is it cut padding?

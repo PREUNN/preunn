@@ -57,4 +57,4 @@ lstmpt.run_training(num_epochs=NUM_EPOCHS)
 lstmpt.set_testset(dataloader=test_dataloader)
 lstmpt.finalize_test()
 lstmpt.get_new_statements(num_classes=1, filename="fre_test_ftp")
-
+#  100% FTP
