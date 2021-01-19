@@ -1,4 +1,3 @@
-# TODO use larger dataset
 from data.source_datasets.datasets import LBNL_FTP_PKTDataset1
 from data.preprocessors.image_preprocessing.image_preprocessors import NormalImagePreprocessor
 from torch.utils.data import DataLoader
@@ -24,7 +23,7 @@ get data
 # all the source datasets
 source_dataset = LBNL_FTP_PKTDataset1()
 source_dataset.shuffle_dataset()
-source_dataset.balance_dataset(class_limit=5000)
+source_dataset.balance_dataset(class_limit=100)
 source_preprocessor = NormalImagePreprocessor(source_dataset, DATA_LENGTH)
 
 # one preprocessor each
@@ -56,4 +55,4 @@ aept.run_training(num_epochs=NUM_EPOCHS)
 aept.set_testset(test_dataloader)
 aept.finalize_test()
 print("Hamming Distance Average: ", aept.get_hamming_metric(num_batches=8))
-# Balanced Hamming: 42.57
+# Balanced Hamming: 41.28

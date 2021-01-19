@@ -155,7 +155,8 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
         # iterating over test data for initialization vectors
         while len(package_list) < 1000:
             for _, (item, _) in enumerate(self.test_data):
-                sample_sequence, _ = self.sample_statement(random_delimiter=3, length=item.shape[1], data=item.to(self.device))
+                sample_sequence, _ = self.sample_statement(random_delimiter=3, length=item.shape[1], data=item.to(
+                    self.device))
 
                 # evaluating each sample separately and create network packages
                 for each in sample_sequence:

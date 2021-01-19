@@ -12,7 +12,7 @@ global variables for training purpose
 """
 LOG_INTERVAL = 2
 MODEL_SAVE_PATH = "LSTM_balanced_http.pt"
-NUM_EPOCHS = 5
+NUM_EPOCHS = 3
 DATA_LENGTH = 1024
 BATCH_SIZE = 128
 LEARNING_RATE = 0.005
@@ -24,7 +24,7 @@ get data
 # all the source datasets
 source_dataset = AllHTTPDatasetsCombined()
 source_dataset.shuffle_dataset()
-source_dataset.balance_dataset(class_limit=5000)
+source_dataset.balance_dataset(class_limit=100)
 source_preprocessor = RandomSequencePreprocessor(source_dataset, ALPHABET_SIZE, DATA_LENGTH)
 
 # one preprocessor each

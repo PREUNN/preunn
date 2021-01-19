@@ -17,14 +17,13 @@ BATCH_SIZE = 128
 DATA_LENGTH = 1024
 LEARNING_RATE = 0.005
 
-
 """
 get data
 """
 # all the source datasets
 source_dataset = AllHTTPDatasetsCombined()
 source_dataset.shuffle_dataset()
-source_dataset.balance_dataset(class_limit=5000)
+source_dataset.balance_dataset(class_limit=100)
 source_preprocessor = ScrambledImagePreprocessor(source_dataset, DATA_LENGTH)
 
 # one preprocessor each

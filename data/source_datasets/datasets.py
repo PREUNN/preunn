@@ -4,6 +4,7 @@ from torch.utils.data import Dataset
 from abc import ABC
 import random
 import torch
+import math
 import copy
 import os
 
@@ -39,26 +40,41 @@ class AbstractDataset(Dataset, ABC):
             print("reloaded and saved dataset " + self.filepath)
         return ret
 
-    def balance_dataset(self, class_limit: int = 5000):
+    def balance_dataset(self, class_limit: int = 100):
         """
         This method will filter the dataset by types to balance them given a limit
         :param class_limit: instance limit per class
         :return: None
         """
         balanced_samples = []
+        limits = []
+        # set up how many classes exist
         for _ in range(len(self.protocol_type.value.keys())):
             balanced_samples.append([])
-        for class_list in balanced_samples:
-            i = 0
-            while len(class_list) < class_limit:
+            limits.append(0)
+        # count all class occurrences
+        for i in range(self.__len__()):
+            data = self.__getitem__(i)
+            index = classify_statement(data, self.protocol_type)
+            limits[index] += 1
+        # calculate fair share of balance by using square root
+        for i in range(len(limits)):
+            try:
+                limits[i] = int(max(math.sqrt(limits[i]), 1)) * class_limit
+            except ValueError:
+                limits[i] = class_limit
+        # get enough data points to hopefully fill all classes to their limit
+        for i in range(len(balanced_samples)):
+            counter = 0
+            while len(balanced_samples[i]) < limits[i]:
                 try:
-                    item = self.__getitem__(i)
+                    item = self.__getitem__(counter)
                 except IndexError:
                     break
                 index = classify_statement(item, self.protocol_type)
-                if len(balanced_samples[index]) < class_limit:
+                if len(balanced_samples[index]) < limits[index]:
                     balanced_samples[index].append(item)
-                i += 1
+                counter += 1
         self.data = [item for sublist in balanced_samples for item in sublist]
         self.shuffle_dataset()
 
@@ -263,8 +279,3 @@ class LBNL_FTP_PKTDatasetCombined(AbstractFTPDataset):
         datasets.append(LBNL_FTP_PKTDataset4())
         for dataset in datasets:
             self.merge(dataset)
-
-
-if __name__ == "__main__":
-    ftp = CICDDoS2019HTTPDataset()
-    ftp.balance_dataset(class_limit=200)

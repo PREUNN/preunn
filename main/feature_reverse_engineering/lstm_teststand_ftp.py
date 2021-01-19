@@ -1,6 +1,6 @@
 from models.long_short_term_memory.architecture import LSTMNetworkFRE
 from models.long_short_term_memory.personal_trainer import LongShortTermMemoryPersonalTrainer
-from data.source_datasets.datasets import LBNL_FTP_PKTDatasetCombined
+from data.source_datasets.datasets import LBNL_FTP_PKTDataset1
 from data.preprocessors.sequence_preprocessing.sequence_preprocessors import RandomSequencePreprocessor
 from torch.utils.data import DataLoader
 from main.helper import load_model
@@ -12,7 +12,7 @@ global variables for training purpose
 """
 LOG_INTERVAL = 2
 MODEL_SAVE_PATH = "LSTM_balanced_ftp.pt"
-NUM_EPOCHS = 2
+NUM_EPOCHS = 1
 DATA_LENGTH = 1024
 BATCH_SIZE = 128
 LEARNING_RATE = 0.005
@@ -22,9 +22,9 @@ ALPHABET_SIZE = 130
 get data
 """
 # all the source datasets
-source_dataset = LBNL_FTP_PKTDatasetCombined()
+source_dataset = LBNL_FTP_PKTDataset1()
 source_dataset.shuffle_dataset()
-source_dataset.balance_dataset(class_limit=5000)
+source_dataset.balance_dataset(class_limit=100)
 source_preprocessor = RandomSequencePreprocessor(source_dataset, ALPHABET_SIZE, DATA_LENGTH)
 
 # one preprocessor each

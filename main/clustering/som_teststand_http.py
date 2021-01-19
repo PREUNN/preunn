@@ -3,6 +3,7 @@ import numpy as np
 import main.clustering.metrics as metrics
 from data.source_datasets.datasets import AllHTTPDatasetsCombined
 from data.preprocessors.image_preprocessing.image_preprocessors import NormalImagePreprocessor
+from models.convolutional_neural_network.architecture import CNN
 from models.auto_encoder.architecture import AE
 from models.self_organizing_map.personal_trainer import SelfOrganizingMapPersonalTrainer
 from torch.utils.data import DataLoader
@@ -14,11 +15,13 @@ from matplotlib import pyplot as plt
 """
 global variables for training purpose
 """
-BACKBONE = "CNN"
-INPUT_LENGTH = 240 if BACKBONE == "CNN" else 128
+BACKBONE = "AE_balanced"
+INPUT_LENGTH = 1024
+if "AE" in BACKBONE: INPUT_LENGTH = 128
+if "CNN" in BACKBONE: INPUT_LENGTH = 240
 LOG_INTERVAL = 100
 MODEL_SAVE_PATH = "SOM_"+BACKBONE+"_http.p"
-NUM_EPOCHS = 5
+NUM_EPOCHS = 10
 BATCH_SIZE = 128
 
 """
@@ -26,8 +29,9 @@ get data
 """
 # all the source datasets
 source_dataset = AllHTTPDatasetsCombined()
+source_dataset.shuffle_dataset()
+source_dataset.balance_dataset(class_limit=100)
 source_preprocessor = NormalImagePreprocessor(source_dataset, data_length=1024)
-source_preprocessor.shuffle_dataset()
 
 # one preprocessor each
 train_preprocessor, test_preprocessor = source_preprocessor.split(0.975)
@@ -39,14 +43,16 @@ test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True, drop_l
 """
 create or load model
 """
-backbone = load_model(BACKBONE+"_http.pt", AE())
-# backbone = None
+backbone = None
+if "AE" in BACKBONE: backbone = load_model(BACKBONE+"_http.pt", AE())
+if "CNN" in BACKBONE: backbone = load_model(BACKBONE+"_http.pt", CNN())
 try:
     with open(MODEL_SAVE_PATH, 'rb') as infile:
         model = pickle.load(infile)
-        print("loaded som")
+        print("loaded " + MODEL_SAVE_PATH)
 except:
-    model = MiniSom(1, 16, input_len=INPUT_LENGTH, sigma=2, learning_rate=0.005)
+    print("New model created")
+    model = MiniSom(1, 32, input_len=INPUT_LENGTH, sigma=1.5, learning_rate=0.005)
 
 """
 run personal training
@@ -87,9 +93,9 @@ plt.show()
 conf = metrics.get_confident_cluster_metric(clusterwise_matrix)
 relevant_conf = metrics.get_confident_cluster_metric(clusterwise_matrix, skip_zeros=True)
 
-print("Confidence: " + str(conf)) # CNN 75%
-print("Relevant confidence: " + str(relevant_conf)) # CNN 75%
-np.savetxt("accuracy_matrix_http.csv", accuracy_matrix, delimiter=",")
-np.savetxt("clusterwise_matrix_http.csv", clusterwise_matrix, delimiter=",")
-np.savetxt("typewise_matrix_http.csv", typewise_matrix, delimiter=",")
+print("Confidence: " + str(conf)) # AE_balanced 78,125% # CNN 75% # Baseline 78.125%
+print("Relevant confidence: " + str(relevant_conf)) # AE_balanced 83.33% # CNN 75% # Baseline 78.125%
+np.savetxt("accuracy_matrix_" + BACKBONE + "_http.csv", accuracy_matrix, delimiter=",")
+np.savetxt("clusterwise_matrix_" + BACKBONE + "_http.csv", clusterwise_matrix, delimiter=",")
+np.savetxt("typewise_matrix_" + BACKBONE + "_http.csv", typewise_matrix, delimiter=",")
 print("success")

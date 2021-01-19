@@ -12,7 +12,7 @@ global variables for training purpose
 """
 LOG_INTERVAL = 25
 MODEL_SAVE_PATH = "CNN_balanced_ftp.pt"
-NUM_EPOCHS = 25
+NUM_EPOCHS = 10
 BATCH_SIZE = 128
 DATA_LENGTH = 1024
 LEARNING_RATE = 0.005
@@ -23,7 +23,7 @@ get data
 # all the source datasets
 source_dataset = LBNL_FTP_PKTDataset1()
 source_dataset.shuffle_dataset()
-source_dataset.balance_dataset(class_limit=5000)
+source_dataset.balance_dataset(class_limit=100)
 source_preprocessor = ScrambledImagePreprocessor(source_dataset, DATA_LENGTH)
 
 # one preprocessor each
@@ -49,8 +49,8 @@ criterion = nn.CrossEntropyLoss()
 """
 run personal training
 """
-cnnpt = ConvolutionalNeuralNetworkPersonalTrainer(model, training_dataloader, validation_dataloader, LOG_INTERVAL,
-                                                  MODEL_SAVE_PATH, criterion, optimizer)
+cnnpt = ConvolutionalNeuralNetworkPersonalTrainer(model, training_dataloader, validation_dataloader,
+                                                  LOG_INTERVAL, MODEL_SAVE_PATH, criterion, optimizer)
 cnnpt.run_training(num_epochs=NUM_EPOCHS)
 cnnpt.set_testset(test_dataloader)
 cnnpt.finalize_test()

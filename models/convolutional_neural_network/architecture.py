@@ -8,7 +8,7 @@ class CNN(AbstractArchitecture):
     """
     def __init__(self):
         super(CNN, self).__init__()
-        self.dropout = 0.5
+        self.dropout = 0.2
 
         self.conv1 = nn.Sequential(
             nn.Conv1d(1, 128, kernel_size=4, stride=2),
