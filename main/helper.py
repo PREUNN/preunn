@@ -15,7 +15,7 @@ def load_model(model_save_path: str, architecture: abstract_architecture):
         print("loaded ", model)
     else:
         model = architecture
-        print("new model created")
+        print("new model created for " + model_save_path)
     return model
 
 

@@ -143,11 +143,13 @@ class ClusteringPreprocessor(AbstractImagePreprocessor):
 
         # getting a sequence length of items and preparing them
         for i in range(self.sequence_length+1):
-            data, _ = self.nip.__getitem__(idx + i)
-            data = self.feature_extractor.create_output(data.cuda())
-            data = self.som.winner(data.cpu().squeeze(0).detach())[1]
-            data = torch.tensor(data)
-            data_list.append(data)
+            item, _ = self.nip.__getitem__(idx + i)
+            data = self.feature_extractor.create_output(item.cuda()).detach()
+            winner = self.som.winner(data.cpu().squeeze(1))[1]
+            if winner != 63:
+                print("hit") # TODO debug
+            winner = torch.tensor(winner)
+            data_list.append(winner)
 
         # output
         stacked_data = torch.stack(data_list)

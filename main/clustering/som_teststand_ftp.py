@@ -15,7 +15,7 @@ from matplotlib import pyplot as plt
 """
 global variables for training purpose
 """
-BACKBONE = "CNN_balanced"
+BACKBONE = "AE_balanced"
 INPUT_LENGTH = 1024
 if "AE" in BACKBONE: INPUT_LENGTH = 128
 if "CNN" in BACKBONE: INPUT_LENGTH = 240
@@ -59,9 +59,9 @@ run personal training
 """
 sompt = SelfOrganizingMapPersonalTrainer(model, training_dataloader, test_dataloader, LOG_INTERVAL,
                                          MODEL_SAVE_PATH, backbone)
-sompt.run_training(num_epochs=NUM_EPOCHS)
-with open(MODEL_SAVE_PATH, 'wb') as outfile:
-    pickle.dump(model, outfile)
+# sompt.run_training(num_epochs=NUM_EPOCHS)
+# with open(MODEL_SAVE_PATH, 'wb') as outfile:
+#     pickle.dump(model, outfile)
 
 """
 metrics
@@ -93,8 +93,8 @@ plt.show()
 conf = metrics.get_confident_cluster_metric(clusterwise_matrix)
 relevant_conf = metrics.get_confident_cluster_metric(clusterwise_matrix, skip_zeros=True)
 
-print("Confidence: " + str(conf)) # CNN 28.125% / AE_balanced 79.6875% # Baseline 60.9375%
-print("Relevant confidence: " + str(relevant_conf)) # CNN 28.125% / AE_balanced 86.44% # Baseline 72.22%
+print("Confidence: " + str(conf)) # CNN 29.6875% / AE_balanced 79.6875% # Baseline 60.9375%
+print("Relevant confidence: " + str(relevant_conf)) # CNN 29.6875% / AE_balanced 86.44% # Baseline 72.22%
 np.savetxt("accuracy_matrix_" + BACKBONE + "_ftp.csv", accuracy_matrix, delimiter=",")
 np.savetxt("clusterwise_matrix_" + BACKBONE + "_ftp.csv", clusterwise_matrix, delimiter=",")
 np.savetxt("typewise_matrix_" + BACKBONE + "_ftp.csv", typewise_matrix, delimiter=",")

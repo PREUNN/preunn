@@ -2,15 +2,17 @@ import torch.nn as nn
 import pickle
 import torch
 import os
-from data.source_datasets.datasets import LBNL_FTP_PKTDataset1
+from data.source_datasets.datasets import LBNL_FTP_PKTDataset1, LBNL_FTP_PKTDataset2
 from data.preprocessors.image_preprocessing.image_preprocessors \
     import ClusteringPreprocessor
 from models.long_short_term_memory.architecture import LSTMNetworkSR
 from models.long_short_term_memory.personal_trainer \
     import LongShortTermMemoryPersonalTrainer
+from models.auto_encoder.architecture import AE
 from torch.utils.data import DataLoader
 from main.helper import load_model
 from main.state_recognition import metrics
+from numpy import genfromtxt
 
 
 """
@@ -18,39 +20,50 @@ global variables for training purpose
 """
 LOG_INTERVAL = 2
 MODEL_SAVE_PATH = "LSTM_ftp.pt"
-BACKBONE1_SAVE_PATH = "AE_ftp.pt"
-BACKBONE2_SAVE_PATH = "SOM_AE_ftp.p"
+# BACKBONE1_SAVE_PATH = "D:\\Wissenschaft\\Projekte\\preunn\\main\\clustering\\AE_balanced_ftp.pt"
+BACKBONE1_SAVE_PATH = "AE_balanced_ftp.pt"
+# BACKBONE2_SAVE_PATH = "D:\\Wissenschaft\\Projekte\\preunn\\main\\clustering\\SOM_AE_balanced_ftp.p"
+BACKBONE2_SAVE_PATH = "SOM_AE_balanced_ftp.p"
 NUM_EPOCHS = 5
 BATCH_SIZE = 128
-SEQ_LENGTH = 24
+SEQ_LENGTH = 2
 DATA_LENGTH = 1024
+
 
 """
 get data
 """
 # all the source datasets
-source_dataset = LBNL_FTP_PKTDataset1()
+source_dataset = LBNL_FTP_PKTDataset2()
+# source_dataset.shuffle_dataset()
+# source_dataset.balance_dataset(class_limit=100)
 # no shuffling!
-
-train_dataset, test_dataset = source_dataset.split(0.9)
-train_dataset, validation_dataset = train_dataset.split(0.66)
-
 
 """
 create or load model and backbone
 """
 backbone = []
 if os.path.isfile(BACKBONE1_SAVE_PATH):
-    backbone.append(torch.load(BACKBONE1_SAVE_PATH))
-    print("loaded ", backbone[0])
+    backbone.append(load_model(BACKBONE1_SAVE_PATH, AE()))
 with open(BACKBONE2_SAVE_PATH, 'rb') as infile:
     backbone.append(pickle.load(infile))
-    print("loaded som")
-model = load_model(MODEL_SAVE_PATH, LSTMNetworkSR(backbone[1].get_weights().shape[1], 64, 1))
+    print("loaded som " + BACKBONE2_SAVE_PATH)
+model = load_model(MODEL_SAVE_PATH, LSTMNetworkSR(backbone[1].get_weights().shape[1], 50, 5))
 
-train_preprocessor = ClusteringPreprocessor(train_dataset, DATA_LENGTH, backbone[0], backbone[1], SEQ_LENGTH)
-validation_preprocessor = ClusteringPreprocessor(validation_dataset, DATA_LENGTH, backbone[0], backbone[1], SEQ_LENGTH)
-test_preprocessor = ClusteringPreprocessor(test_dataset, DATA_LENGTH, backbone[0], backbone[1], SEQ_LENGTH)
+
+source_preprocessor = ClusteringPreprocessor(source_dataset, DATA_LENGTH, feature_extractor=backbone[0],
+                                             som=backbone[1], sequence_length=SEQ_LENGTH)
+
+train_dataset, test_dataset = source_dataset.split(0.9)
+train_dataset, validation_dataset = train_dataset.split(0.66)
+
+
+train_preprocessor = ClusteringPreprocessor(train_dataset, DATA_LENGTH, feature_extractor=backbone[0],
+                                            som=backbone[1], sequence_length=SEQ_LENGTH)
+validation_preprocessor = ClusteringPreprocessor(validation_dataset, DATA_LENGTH, feature_extractor=backbone[0],
+                                                 som=backbone[1], sequence_length=SEQ_LENGTH)
+test_preprocessor = ClusteringPreprocessor(test_dataset, DATA_LENGTH, feature_extractor=backbone[0],
+                                           som=backbone[1], sequence_length=SEQ_LENGTH)
 
 # one dataloader each
 training_dataloader = DataLoader(train_preprocessor, BATCH_SIZE, shuffle=False, drop_last=True)
@@ -76,8 +89,7 @@ lstmpt.finalize_test()
 metrics
 """
 # cluster prediction clusterwise
-with open("accuracy_matrix_ftp.p", 'rb') as infile:
-    acc = pickle.load(infile)
+acc = genfromtxt('accuracy_matrix_AE_balanced_ftp.csv', delimiter=',')
 cw_acc = metrics.get_cluster_prediction_clusterwise(lstmpt, acc)
 print(cw_acc)
 # cluster prediction typewise

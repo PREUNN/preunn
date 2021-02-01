@@ -20,7 +20,7 @@ class AbstractLSTMNetwork(AbstractArchitecture, ABC):
         x = self.emb(x)
         x, hc = self.lstm(x.transpose(0, 1), hc)
         x = self.fc(x.transpose(0, 1))
-        x = self.out(x).squeeze_()
+        x = self.out(x).squeeze_(2)
         return x, hc
 
     def init_hidden(self, batch_size: int):
@@ -105,6 +105,6 @@ class LSTMNetworkSG(AbstractCELSTMNetwork):
         self.num_classes = num_classes
         super(LSTMNetworkSG, self).__init__(input_size=self.ascii_size + 2 * self.num_classes,
                                             hidden_size=100,
-                                            layers=1)
+                                            layers=2)
 
 
