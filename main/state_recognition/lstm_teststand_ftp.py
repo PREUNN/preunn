@@ -2,7 +2,7 @@ import torch.nn as nn
 import pickle
 import torch
 import os
-from data.source_datasets.datasets import LBNL_FTP_PKTDataset1, LBNL_FTP_PKTDataset2
+from data.source_datasets.datasets import LBNL_FTP_PKTDataset1
 from data.preprocessors.image_preprocessing.image_preprocessors \
     import ClusteringPreprocessor
 from models.long_short_term_memory.architecture import LSTMNetworkSR
@@ -25,7 +25,7 @@ BACKBONE1_SAVE_PATH = "AE_balanced_"+PROTOCOL+".pt"
 BACKBONE2_SAVE_PATH = "SOM_AE_balanced_"+PROTOCOL+".p"
 NUM_EPOCHS = 5
 BATCH_SIZE = 128
-SEQ_LENGTH = 2
+SEQ_LENGTH = 24
 DATA_LENGTH = 1024
 
 
@@ -33,9 +33,7 @@ DATA_LENGTH = 1024
 get data
 """
 # all the source datasets
-source_dataset = LBNL_FTP_PKTDataset2()
-# source_dataset.shuffle_dataset()
-# source_dataset.balance_dataset(class_limit=100)
+source_dataset = LBNL_FTP_PKTDataset1()
 # no shuffling!
 
 """
@@ -46,8 +44,10 @@ if os.path.isfile(BACKBONE1_SAVE_PATH):
     backbone.append(load_model(BACKBONE1_SAVE_PATH, AE()))
 with open(BACKBONE2_SAVE_PATH, 'rb') as infile:
     backbone.append(pickle.load(infile))
-    print("loaded som " + BACKBONE2_SAVE_PATH)
-model = load_model(MODEL_SAVE_PATH, LSTMNetworkSR(backbone[1].get_weights().shape[1], 50, 5))
+    print("loaded " + BACKBONE2_SAVE_PATH)
+model = load_model(MODEL_SAVE_PATH, LSTMNetworkSR(num_classes=backbone[1].get_weights().shape[1],
+                                                  num_hidden=50,
+                                                  num_layers=3))
 
 
 source_preprocessor = ClusteringPreprocessor(source_dataset, DATA_LENGTH, feature_extractor=backbone[0],
@@ -90,5 +90,5 @@ metrics
 # cluster prediction clusterwise
 acc = genfromtxt('accuracy_matrix_AE_balanced_'+PROTOCOL+'.csv', delimiter=',')
 cw_acc = metrics.get_cluster_prediction_clusterwise(lstmpt, acc)
-print(cw_acc)
+print(cw_acc) # 42,5%
 # cluster prediction typewise
