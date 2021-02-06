@@ -18,12 +18,11 @@ from numpy import genfromtxt
 """
 global variables for training purpose
 """
+PROTOCOL = "ftp"
 LOG_INTERVAL = 2
-MODEL_SAVE_PATH = "LSTM_ftp.pt"
-# BACKBONE1_SAVE_PATH = "D:\\Wissenschaft\\Projekte\\preunn\\main\\clustering\\AE_balanced_ftp.pt"
-BACKBONE1_SAVE_PATH = "AE_balanced_ftp.pt"
-# BACKBONE2_SAVE_PATH = "D:\\Wissenschaft\\Projekte\\preunn\\main\\clustering\\SOM_AE_balanced_ftp.p"
-BACKBONE2_SAVE_PATH = "SOM_AE_balanced_ftp.p"
+MODEL_SAVE_PATH = "LSTM_"+PROTOCOL+".pt"
+BACKBONE1_SAVE_PATH = "AE_balanced_"+PROTOCOL+".pt"
+BACKBONE2_SAVE_PATH = "SOM_AE_balanced_"+PROTOCOL+".p"
 NUM_EPOCHS = 5
 BATCH_SIZE = 128
 SEQ_LENGTH = 2
@@ -89,7 +88,7 @@ lstmpt.finalize_test()
 metrics
 """
 # cluster prediction clusterwise
-acc = genfromtxt('accuracy_matrix_AE_balanced_ftp.csv', delimiter=',')
+acc = genfromtxt('accuracy_matrix_AE_balanced_'+PROTOCOL+'.csv', delimiter=',')
 cw_acc = metrics.get_cluster_prediction_clusterwise(lstmpt, acc)
 print(cw_acc)
 # cluster prediction typewise

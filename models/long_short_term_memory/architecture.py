@@ -105,6 +105,6 @@ class LSTMNetworkSG(AbstractCELSTMNetwork):
         self.num_classes = num_classes
         super(LSTMNetworkSG, self).__init__(input_size=self.ascii_size + 2 * self.num_classes,
                                             hidden_size=100,
-                                            layers=2)
+                                            layers=1)
 
 

@@ -3,4 +3,3 @@ TODO run experiments on equally sampled classes (fre, fe done)
 TODO test clustering metrics again (by balanced AE experiments?)
 TODO what does the hamming distance mean in ftp? is it cut padding?
 TODO fix sr long vs float tensor
-TODO debug som save??? SR ftp test cnn again

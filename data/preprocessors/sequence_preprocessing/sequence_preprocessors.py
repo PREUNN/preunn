@@ -6,6 +6,7 @@ from data.preprocessors.abstract_preprocessor \
     import AbstractPreprocessor, AbstractDataset
 from abc import ABC
 import random
+import torch
 
 
 class AbstractSequencePreprocessor(AbstractPreprocessor, ABC):
@@ -140,15 +141,17 @@ class RandomSequencePreprocessor(AbstractSequencePreprocessor):
 
                 # backbone preprocessing if available
                 if self.feature_extractor is not None and self.som is not None:
-                    aux_data, _ = self.aux_preprocessor.__getitem__(start_idx)
-                    aux_data = self.feature_extractor.create_output(aux_data.cuda())
-                    aux_data = self.som.winner(aux_data.cpu().squeeze(0).detach())[1]
+                    with torch.no_grad():
+                        aux_data, _ = self.aux_preprocessor.__getitem__(start_idx)
+                        aux_data = self.feature_extractor.create_output(aux_data.cuda())
+                        aux_data = self.som.winner(aux_data.cpu().squeeze(1))[1]
 
                 # setting special symbols
                 item += chr(self.alphabet_size - 2 * self.num_clusters + aux_data) + data \
                         + chr(self.alphabet_size - self.num_clusters + aux_data)
                 assert(all([ord(x) < self.alphabet_size for x in item]))
-            except:
+            except Exception as e:
+                print(e)
                 return self.__getitem__(random.randint(0, idx))
             start_idx += 1
 

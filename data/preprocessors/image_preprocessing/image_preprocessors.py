@@ -146,8 +146,6 @@ class ClusteringPreprocessor(AbstractImagePreprocessor):
             item, _ = self.nip.__getitem__(idx + i)
             data = self.feature_extractor.create_output(item.cuda()).detach()
             winner = self.som.winner(data.cpu().squeeze(1))[1]
-            if winner != 63:
-                print("hit") # TODO debug
             winner = torch.tensor(winner)
             data_list.append(winner)
 

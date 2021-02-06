@@ -11,17 +11,17 @@ from minisom import MiniSom
 from main.helper import load_model
 from matplotlib import pyplot as plt
 
-
 """
 global variables for training purpose
 """
 BACKBONE = "AE_balanced"
+PROTOCOL = "ftp"
 INPUT_LENGTH = 1024
 if "AE" in BACKBONE: INPUT_LENGTH = 128
 if "CNN" in BACKBONE: INPUT_LENGTH = 240
 LOG_INTERVAL = 100
-MODEL_SAVE_PATH = "SOM_"+BACKBONE+"_ftp.p"
-NUM_EPOCHS = 3
+MODEL_SAVE_PATH = "SOM_"+BACKBONE+"_"+PROTOCOL+".p"
+NUM_EPOCHS = 10
 BATCH_SIZE = 128
 
 """
@@ -44,8 +44,8 @@ test_dataloader = DataLoader(test_preprocessor, BATCH_SIZE, shuffle=True, drop_l
 create or load model
 """
 backbone = None
-if "AE" in BACKBONE: backbone = load_model(BACKBONE+"_http.pt", AE())
-if "CNN" in BACKBONE: backbone = load_model(BACKBONE+"_http.pt", CNN())
+if "AE" in BACKBONE: backbone = load_model(BACKBONE+"_"+PROTOCOL+".pt", AE())
+if "CNN" in BACKBONE: backbone = load_model(BACKBONE+"_"+PROTOCOL+".pt", CNN())
 try:
     with open(MODEL_SAVE_PATH, 'rb') as infile:
         model = pickle.load(infile)
@@ -53,7 +53,7 @@ try:
 except:
     print("New model created")
     model = MiniSom(1, 64, input_len=INPUT_LENGTH, sigma=3, learning_rate=0.005)
-
+NUM_CLUSTERS = model.get_weights().shape[1]
 """
 run personal training
 """
@@ -70,7 +70,7 @@ metrics
 accuracy_matrix = metrics.get_accuracy_matrix(sompt)
 plt.matshow(accuracy_matrix)
 plt.title("General Clustering")
-plt.xlabel("FTP Types")
+plt.xlabel(PROTOCOL+" Types")
 plt.ylabel("SOM Clusters")
 plt.show()
 
@@ -78,7 +78,7 @@ plt.show()
 clusterwise_matrix = metrics.get_clusterwise_share(accuracy_matrix)
 plt.matshow(clusterwise_matrix)
 plt.title("Clusterwise Share")
-plt.xlabel("FTP Types")
+plt.xlabel(PROTOCOL+" Types")
 plt.ylabel("SOM Clusters")
 plt.show()
 
@@ -86,16 +86,16 @@ plt.show()
 typewise_matrix = metrics.get_typewise_share(accuracy_matrix)
 plt.matshow(typewise_matrix)
 plt.title("Typewise Share")
-plt.xlabel("FTP Types")
+plt.xlabel(PROTOCOL+" Types")
 plt.ylabel("SOM Clusters")
 plt.show()
 
 conf = metrics.get_confident_cluster_metric(clusterwise_matrix)
 relevant_conf = metrics.get_confident_cluster_metric(clusterwise_matrix, skip_zeros=True)
 
-print("Confidence: " + str(conf)) # CNN 29.6875% / AE_balanced 79.6875% # Baseline 60.9375%
-print("Relevant confidence: " + str(relevant_conf)) # CNN 29.6875% / AE_balanced 86.44% # Baseline 72.22%
-np.savetxt("accuracy_matrix_" + BACKBONE + "_ftp.csv", accuracy_matrix, delimiter=",")
-np.savetxt("clusterwise_matrix_" + BACKBONE + "_ftp.csv", clusterwise_matrix, delimiter=",")
-np.savetxt("typewise_matrix_" + BACKBONE + "_ftp.csv", typewise_matrix, delimiter=",")
+print("Confidence: " + str(conf)) # CNN 29.6875% / AE_balanced 73.4375% # Baseline 60.9375%
+print("Relevant confidence: " + str(relevant_conf)) # CNN 29.6875% / AE_balanced 85,45% # Baseline 72.22%
+np.savetxt("accuracy_matrix_" + BACKBONE + "_"+PROTOCOL+".csv", accuracy_matrix, delimiter=",")
+np.savetxt("clusterwise_matrix_" + BACKBONE + "_"+PROTOCOL+".csv", clusterwise_matrix, delimiter=",")
+np.savetxt("typewise_matrix_" + BACKBONE + "_"+PROTOCOL+".csv", typewise_matrix, delimiter=",")
 print("success")

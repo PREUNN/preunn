@@ -1,6 +1,7 @@
 from data.preprocessors.sequence_preprocessing.sequence_preprocessors import RandomSequencePreprocessor
 from models.long_short_term_memory.personal_trainer import LongShortTermMemoryPersonalTrainer
 from models.long_short_term_memory.architecture import LSTMNetworkSG
+from models.auto_encoder.architecture import AE
 from data.source_datasets.datasets import LBNL_FTP_PKTDataset1
 from torch.utils.data import DataLoader
 from main.helper import load_model
@@ -38,14 +39,12 @@ training_dataset, validation_dataset = training_dataset.split(0.66)
 create or load model
 """
 backbone = []
-if os.path.isfile(BACKBONE1_SAVE_PATH):
-    backbone.append(torch.load(BACKBONE1_SAVE_PATH))
-    print("loaded ", backbone[0])
+if "AE" in BACKBONE1_SAVE_PATH: backbone.append(load_model(BACKBONE1_SAVE_PATH, AE()))
 with open(BACKBONE2_SAVE_PATH, 'rb') as infile:
     backbone.append(pickle.load(infile))
     print("loaded som " + BACKBONE2_SAVE_PATH)
 
-NUM_CLUSTERS = backbone[1].get_weights().shape[1]
+NUM_CLUSTERS = 64   # backbone[1].get_weights().shape[1]
 ALPHABET_SIZE = 128 + 2 * NUM_CLUSTERS
 
 model = load_model(MODEL_SAVE_PATH, LSTMNetworkSG(num_classes=NUM_CLUSTERS))
