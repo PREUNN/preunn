@@ -80,8 +80,10 @@ class AbstractCELSTMNetwork(AbstractArchitecture, ABC):
 
 class LSTMNetworkFRE(AbstractCELSTMNetwork):
 
-    def __init__(self, num_classes: int = 1):
+    def __init__(self, num_classes: int = 16, num_hidden: int = 50, num_layers: int = 1):
         self.num_classes = num_classes
+        self.num_hidden = num_hidden
+        self.num_layers = num_layers
         super(LSTMNetworkFRE, self).__init__(input_size=self.ascii_size + 2 * self.num_classes,
                                              hidden_size=50,
                                              layers=1)
@@ -100,10 +102,11 @@ class LSTMNetworkSR(AbstractLSTMNetwork):
 
 class LSTMNetworkSG(AbstractCELSTMNetwork):
 
-    def __init__(self, num_classes: int = 16):
+    def __init__(self, num_classes: int = 16, num_hidden: int = 100, num_layers: int = 1):
         self.num_classes = num_classes
+        self.num_hidden = num_hidden
+        self.num_layers = num_layers
         super(LSTMNetworkSG, self).__init__(input_size=self.ascii_size + 2 * self.num_classes,
-                                            hidden_size=100,
-                                            layers=1)
-
+                                            hidden_size=self.num_hidden,
+                                            layers=self.num_layers)
 

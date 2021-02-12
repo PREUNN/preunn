@@ -32,8 +32,8 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
             h = self.model.init_hidden(batch_size=batch_size)
             h = tuple([each.data.to(self.device) for each in h])
             # change between the following 2 lines from fre/sg and sr experiments
-            # target = target.to(self.device).long()
-            target = target.to(self.device).float()
+            target = target.to(self.device).long()
+            # target = target.to(self.device).float()
             data = data.to(self.device).long()
             self.optimizer.zero_grad()
             loss = 0

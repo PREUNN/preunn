@@ -3,3 +3,6 @@ TODO optimize clustering again
 TODO what does the hamming distance mean in ftp? is it cut padding?
 TODO fix sr long vs float tensor
 TODO test ftp SR with lower learning rate?
+TODO train sg http longer/second layer?
+TODO print ftp sg
+TODO balance SGs outputs?
