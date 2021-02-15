@@ -77,5 +77,5 @@ metrics
 # cluster prediction clusterwise
 acc = genfromtxt('accuracy_matrix_AE_balanced_http.csv', delimiter=',')
 cw_acc = metrics.get_cluster_prediction_clusterwise(lstmpt, acc)
-print(cw_acc)
+print(cw_acc) # 71%
 # cluster prediction typewise

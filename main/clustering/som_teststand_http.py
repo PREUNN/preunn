@@ -15,7 +15,7 @@ from matplotlib import pyplot as plt
 """
 global variables for training purpose
 """
-BACKBONE = "AE_balanced"
+BACKBONE = "Baseline"
 INPUT_LENGTH = 1024
 if "AE" in BACKBONE: INPUT_LENGTH = 128
 if "CNN" in BACKBONE: INPUT_LENGTH = 240
@@ -52,7 +52,7 @@ try:
         print("loaded " + MODEL_SAVE_PATH)
 except:
     print("New model created")
-    model = MiniSom(1, 32, input_len=INPUT_LENGTH, sigma=1.5, learning_rate=0.005)
+    model = MiniSom(1, 16, input_len=INPUT_LENGTH, sigma=1.5, learning_rate=0.005)
 
 """
 run personal training
@@ -93,8 +93,8 @@ plt.show()
 conf = metrics.get_confident_cluster_metric(clusterwise_matrix)
 relevant_conf = metrics.get_confident_cluster_metric(clusterwise_matrix, skip_zeros=True)
 
-print("Confidence: " + str(conf)) # AE_balanced 78,125% # CNN 75% # Baseline 78.125%
-print("Relevant confidence: " + str(relevant_conf)) # AE_balanced 83.33% # CNN 75% # Baseline 78.125%
+print("Confidence: " + str(conf)) # AE_balanced 87.5% # CNN 68.75% # Baseline 75%
+print("Relevant confidence: " + str(relevant_conf)) # AE_balanced 87.5% # CNN 68.75% # Baseline 75%
 np.savetxt("accuracy_matrix_" + BACKBONE + "_http.csv", accuracy_matrix, delimiter=",")
 np.savetxt("clusterwise_matrix_" + BACKBONE + "_http.csv", clusterwise_matrix, delimiter=",")
 np.savetxt("typewise_matrix_" + BACKBONE + "_http.csv", typewise_matrix, delimiter=",")

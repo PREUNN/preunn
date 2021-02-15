@@ -17,7 +17,7 @@ LOG_INTERVAL = 1
 MODEL_SAVE_PATH = "LSTM_balanced_http.pt"
 BACKBONE1_SAVE_PATH = "AE_balanced_http.pt"
 BACKBONE2_SAVE_PATH = "SOM_AE_balanced_http.p"
-NUM_EPOCHS = 2
+NUM_EPOCHS = 5
 DATA_LENGTH = 1024
 BATCH_SIZE = 128
 LEARNING_RATE = 0.005
@@ -74,7 +74,7 @@ run personal training
 lstmpt = LongShortTermMemoryPersonalTrainer(model, training_dataloader, validation_dataloader, LOG_INTERVAL,
                                             MODEL_SAVE_PATH, criterion, optimizer)
 
-lstmpt.run_training(num_epochs=NUM_EPOCHS)
+# lstmpt.run_training(num_epochs=NUM_EPOCHS)
 lstmpt.set_testset(dataloader=test_dataloader)
-lstmpt.finalize_test()
+# lstmpt.finalize_test()
 lstmpt.get_new_statements(num_classes=NUM_CLUSTERS, filename="sg_test_http")
