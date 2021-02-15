@@ -105,10 +105,10 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
                 letter, h = self.model(data, h)
                 if k % random_delimiter == 0 and k != 0:
                     # Sample from the network as a multinomial distribution
-                    letter_dist = letter[:, data.shape[1]-1].exp()
+                    letter_dist = letter[:, -1].exp()
                     top_i = torch.multinomial(letter_dist, 1)
                 else:
-                    likelihood, top_i = letter[:, data.shape[1]-1].topk(1)
+                    likelihood, top_i = letter[:, -1].topk(1)
                 if data.shape[1] == length:
                     data = data[:, 1:]
                 data = torch.cat([data, top_i], dim=1)
@@ -155,8 +155,9 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
         # iterating over test data for initialization vectors
         while len(package_list) < 1000:
             for _, (item, _) in enumerate(self.test_data):
-                sample_sequence, _ = self.sample_statement(random_delimiter=3, length=item.shape[1], data=item.to(
-                    self.device))
+                sample_sequence, _ = self.sample_statement(random_delimiter=3,
+                                                           length=item.shape[1],
+                                                           data=item.to(self.device))
 
                 # evaluating each sample separately and create network packages
                 for each in sample_sequence:

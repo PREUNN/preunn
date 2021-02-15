@@ -4,6 +4,8 @@ from main.clustering.metrics import get_label
 def get_cluster_prediction_clusterwise(trainer, accuracy_matrix):
     """
     Clusterwise statemachine prediction evaluation metric.
+    :param trainer: personal trainer of the network that is being evaluated.
+    :param accuracy_matrix: evaluation basis from the clustering step.
     :return: None
     """
     batch_size = 0

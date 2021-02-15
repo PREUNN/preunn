@@ -6,4 +6,5 @@
 *.pyc
 *.xml
 *.pcap
+*.ipynb
 *.csv
