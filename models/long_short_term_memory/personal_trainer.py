@@ -161,7 +161,7 @@ class LongShortTermMemoryPersonalTrainer(AbstractPersonalTrainer):
 
                 # evaluating each sample separately and create network packages
                 for each in sample_sequence:
-                    each = sequence_tensor_to_string_list(each.unsqueeze(0), num_classes=1)[0]
+                    each = sequence_tensor_to_string_list(each.unsqueeze(0), num_classes=num_classes)[0]
                     temp_list = re.split(splitter, each)
                     for each in temp_list[1:-1]:
                         if each != "":

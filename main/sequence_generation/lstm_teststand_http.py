@@ -14,10 +14,10 @@ import torch
 global variables for training purpose
 """
 LOG_INTERVAL = 1
-MODEL_SAVE_PATH = "LSTM_balanced_http.pt"
+MODEL_SAVE_PATH = "LSTM2_balanced_http.pt"
 BACKBONE1_SAVE_PATH = "AE_balanced_http.pt"
 BACKBONE2_SAVE_PATH = "SOM_AE_balanced_http.p"
-NUM_EPOCHS = 5
+NUM_EPOCHS = 2
 DATA_LENGTH = 1024
 BATCH_SIZE = 128
 LEARNING_RATE = 0.005
@@ -47,7 +47,7 @@ with open(BACKBONE2_SAVE_PATH, 'rb') as infile:
 NUM_CLUSTERS = backbone[1].get_weights().shape[1]
 ALPHABET_SIZE = 128 + 2 * NUM_CLUSTERS
 
-model = load_model(MODEL_SAVE_PATH, LSTMNetworkSG(num_classes=NUM_CLUSTERS, num_hidden=150, num_layers=3))
+model = load_model(MODEL_SAVE_PATH, LSTMNetworkSG(num_classes=NUM_CLUSTERS, num_hidden=100, num_layers=2))
 
 # one preprocessor each
 training_preprocessor = RandomSequencePreprocessor(training_dataset, ALPHABET_SIZE, DATA_LENGTH,
