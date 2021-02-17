@@ -14,7 +14,7 @@ import torch
 global variables for training purpose
 """
 LOG_INTERVAL = 1
-MODEL_SAVE_PATH = "LSTM2_balanced_http.pt"
+MODEL_SAVE_PATH = "LSTM_balanced_http.pt"
 BACKBONE1_SAVE_PATH = "AE_balanced_http.pt"
 BACKBONE2_SAVE_PATH = "SOM_AE_balanced_http.p"
 NUM_EPOCHS = 2
