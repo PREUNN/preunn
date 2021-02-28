@@ -68,6 +68,7 @@ metrics
 """
 # accuracy matrix
 accuracy_matrix = metrics.get_accuracy_matrix(sompt)
+np.savetxt("accuracy_matrix_" + BACKBONE + "_"+PROTOCOL+".csv", accuracy_matrix, delimiter=",")
 plt.matshow(accuracy_matrix)
 plt.title("General Clustering")
 plt.xlabel(PROTOCOL+" Types")
@@ -76,6 +77,7 @@ plt.show()
 
 # clusterwise share
 clusterwise_matrix = metrics.get_clusterwise_share(accuracy_matrix)
+np.savetxt("clusterwise_matrix_" + BACKBONE + "_"+PROTOCOL+".csv", clusterwise_matrix, delimiter=",")
 plt.matshow(clusterwise_matrix)
 plt.title("Clusterwise Share")
 plt.xlabel(PROTOCOL+" Types")
@@ -84,18 +86,16 @@ plt.show()
 
 # typewise share
 typewise_matrix = metrics.get_typewise_share(accuracy_matrix)
+np.savetxt("typewise_matrix_" + BACKBONE + "_"+PROTOCOL+".csv", typewise_matrix, delimiter=",")
 plt.matshow(typewise_matrix)
 plt.title("Typewise Share")
 plt.xlabel(PROTOCOL+" Types")
 plt.ylabel("SOM Clusters")
 plt.show()
 
-conf = metrics.get_confident_cluster_metric(clusterwise_matrix)
-relevant_conf = metrics.get_confident_cluster_metric(clusterwise_matrix, skip_zeros=True)
+acc = metrics.get_accuracy_metric(clusterwise_matrix)
+relevant_acc = metrics.get_accuracy_metric(clusterwise_matrix, skip_zeros=True)
 
-print("Confidence: " + str(conf)) # CNN 29.6875% / AE_balanced 73.4375% # Baseline 60.9375%
-print("Relevant confidence: " + str(relevant_conf)) # CNN 29.6875% / AE_balanced 85,45% # Baseline 72.22%
-np.savetxt("accuracy_matrix_" + BACKBONE + "_"+PROTOCOL+".csv", accuracy_matrix, delimiter=",")
-np.savetxt("clusterwise_matrix_" + BACKBONE + "_"+PROTOCOL+".csv", clusterwise_matrix, delimiter=",")
-np.savetxt("typewise_matrix_" + BACKBONE + "_"+PROTOCOL+".csv", typewise_matrix, delimiter=",")
+print("Accuracy: " + str(acc)) # CNN 29.6875% / AE_balanced 67.1875% # Baseline 60.9375%
+print("Relevant Accuracy: " + str(relevant_acc)) # CNN 29.6875% / AE_balanced 86% # Baseline 72.22%
 print("success")

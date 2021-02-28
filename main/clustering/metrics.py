@@ -73,7 +73,7 @@ def get_typewise_share(accuracy_matrix: np.ndarray) -> np.ndarray:
     return typewise_matrix
 
 
-def get_confident_cluster_metric(clusterwise_matrix: np.ndarray, skip_zeros: bool = False) -> float:
+def get_accuracy_metric(clusterwise_matrix: np.ndarray, skip_zeros: bool = False) -> float:
     """
     This metric counts the number of confident clusters with more than 50%
     confidence.
@@ -92,6 +92,28 @@ def get_confident_cluster_metric(clusterwise_matrix: np.ndarray, skip_zeros: boo
                 num_conf_cluster += 1
     rel_conf_cluster = num_conf_cluster / num_clusters
     return rel_conf_cluster
+
+
+def get_confidence_metric(clusterwise_matrix: np.ndarray, skip_zeros: bool = False) -> float:
+    """
+    This metric calculates the average confidence of the clusters.
+    :param clusterwise_matrix: original clusterwise matrix
+    :param skip_zeros: whether or not to count clusters with no elements.
+    :return: average confidence
+    """
+    num_conf_cluster = 0
+    ttl_confidence = 0.0
+    num_clusters = clusterwise_matrix.shape[0]
+    for row in clusterwise_matrix:
+        if skip_zeros and sum(row) == 0.0:
+            num_clusters -= 1
+            continue
+        for cell in row:
+            if cell > 50.00:
+                num_conf_cluster += 1
+                ttl_confidence += cell
+    avg_confidence = ttl_confidence / num_clusters
+    return avg_confidence
 
 
 def get_label(cluster: int, accuracy_matrix: np.ndarray) -> int:

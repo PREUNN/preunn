@@ -15,6 +15,8 @@ import torch
 
 ftp_model_path = "D:\\Wissenschaft\\Projekte\\preunn\\main\\sequence_generation\\LSTM_balanced_ftp.pt"
 http_model_path = "D:\\Wissenschaft\\Projekte\\preunn\\main\\sequence_generation\\LSTM_balanced_http.pt"
+model_path = ftp_model_path
+model_path = http_model_path
 
 # all the source datasets
 source_dataset = AllHTTPDatasetsCombined()
@@ -28,14 +30,16 @@ training_dataset, validation_dataset = training_dataset.split(0.9)
 tp = NormalImagePreprocessor(training_dataset, data_length=1024)
 
 
-model = load_model(ftp_model_path, LSTMNetworkSG)
+model = load_model(model_path, LSTMNetworkSG)
 td = DataLoader(tp, 64, shuffle=True, drop_last=True)
 lstmpt = LongShortTermMemoryPersonalTrainer(model, td, td, 1,
-                                            ftp_model_path, nn.MSELoss(),
+                                            model_path, nn.MSELoss(),
                                             op.Adam(model.parameters(), 0.005))
 
-input_str = "test"
+input_str = "Cookie: pcid=148515463850921542; NateMain=Loc=; SAVED_NATEID=%7C0; SSL_LOGIN=1; UD3=m5dcf6d0d9f67b1f0840e27f2b5ae03a; UA3=MTAwMDg0NjI4MjY=||; LOGIN=keeplogin=off&iplevel=2&loginid=; SVC=; Logout= "
 input_tensor = one_hot_encode_string(input_str)
-sample_sequence, _ = lstmpt.sample_statement(random_delimiter=3, length=80,
-                                             data=torch.LongTensor(input_tensor).cuda())
-print(sample_sequence)
+# input_tensor = [129, 129, 129, 129]
+sample_sequence, _ = lstmpt.sample_statement(random_delimiter=3,
+                                             length=380,
+                                             data=torch.LongTensor(input_tensor).cuda().unsqueeze_(0))
+print(sequence_tensor_to_string_list(sample_sequence))
