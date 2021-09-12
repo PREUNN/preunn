@@ -139,6 +139,16 @@ class AbstractFTPDataset(AbstractDataset):
         super().__init__(filepath, FTPParser())
 
 
+class CustomHTTPDataset(AbstractHTTPDataset):
+    def __init__(self, filepath: str):
+        super().__init__(filepath)
+
+
+class CustomFTPDataset(AbstractFTPDataset):
+    def __init__(self, filepath: str):
+        super().__init__(filepath)
+
+
 class IEEEHTTPDataset1(AbstractHTTPDataset):
     def __init__(self):
         super().__init__("/HTTP/IEEEHTTPandDNS/HTTP/http_set1_1")

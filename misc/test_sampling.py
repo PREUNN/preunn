@@ -13,8 +13,8 @@ from torch.utils.data import DataLoader
 import torch
 
 
-ftp_model_path = "D:\\Wissenschaft\\Projekte\\preunn\\main\\sequence_generation\\LSTM_balanced_ftp.pt"
-http_model_path = "D:\\Wissenschaft\\Projekte\\preunn\\main\\sequence_generation\\LSTM_balanced_http.pt"
+ftp_model_path = "/main/sequence_generation/LSTM_balanced_ftp.pt"
+http_model_path = "/main/sequence_generation/LSTM_balanced_http.pt"
 model_path = ftp_model_path
 model_path = http_model_path
 
@@ -36,10 +36,11 @@ lstmpt = LongShortTermMemoryPersonalTrainer(model, td, td, 1,
                                             model_path, nn.MSELoss(),
                                             op.Adam(model.parameters(), 0.005))
 
-input_str = "Cookie: pcid=148515463850921542; NateMain=Loc=; SAVED_NATEID=%7C0; SSL_LOGIN=1; UD3=m5dcf6d0d9f67b1f0840e27f2b5ae03a; UA3=MTAwMDg0NjI4MjY=||; LOGIN=keeplogin=off&iplevel=2&loginid=; SVC=; Logout= "
-input_tensor = one_hot_encode_string(input_str)
-# input_tensor = [129, 129, 129, 129]
-sample_sequence, _ = lstmpt.sample_statement(random_delimiter=3,
-                                             length=380,
-                                             data=torch.LongTensor(input_tensor).cuda().unsqueeze_(0))
-print(sequence_tensor_to_string_list(sample_sequence))
+while True:
+    input_str = input()
+    input_tensor = one_hot_encode_string(input_str)
+    # input_tensor = [129, 129, 129, 129]
+    sample_sequence, _ = lstmpt.sample_statement(random_delimiter=3,
+                                                 length=1024,
+                                                 data=torch.LongTensor(input_tensor).cuda().unsqueeze_(0))
+    print(sequence_tensor_to_string_list(sample_sequence))

@@ -21,10 +21,10 @@ for each in sd:
     print(each)
 print(10*'#')
 
-AE_SAVE_PATH_CLST = "D:\\Wissenschaft\\Projekte\\preunn\\main\\clustering\\AE_balanced_http.pt"
-SOM_SAVE_PATH_CLST = "D:\\Wissenschaft\\Projekte\\preunn\\main\\clustering\\SOM_AE_balanced_ftp.p"
-AE_SAVE_PATH_SR = "D:\\Wissenschaft\\Projekte\\preunn\\main\\state_recognition\\AE_balanced_ftp.pt"
-SOM_SAVE_PATH_SR = "D:\\Wissenschaft\\Projekte\\preunn\\main\\state_recognition\\SOM_AE_balanced_ftp.p"
+AE_SAVE_PATH_CLST = "/main/clustering/AE_balanced_http.pt"
+SOM_SAVE_PATH_CLST = "/main/clustering/SOM_AE_balanced_ftp.p"
+AE_SAVE_PATH_SR = "/main/state_recognition/AE_balanced_ftp.pt"
+SOM_SAVE_PATH_SR = "/main/state_recognition/SOM_AE_balanced_ftp.p"
 
 
 ae = load_model(AE_SAVE_PATH_CLST, AE())
